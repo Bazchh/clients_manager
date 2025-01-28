@@ -10,14 +10,12 @@ class UserRepository {
   final SupabaseClient _client = Supabase.instance.client;
 
   Future<void> createUser(ExtendedUser user) async {
-    // Inserir na tabela "users"
     final userResponse =
         await _client.from('users').insert(user.toMap()).execute();
     if (userResponse.error != null) {
       throw Exception('Error creating user: ${userResponse.error!.message}');
     }
 
-    // Inserir na tabela "user_profiles"
     final profileResponse = await _client
         .from('user_profiles')
         .insert(user.toProfileMap())
@@ -29,7 +27,6 @@ class UserRepository {
   }
 
   Future<List<ExtendedUser>> getAllUsers() async {
-    // Join entre "users" e "user_profiles"
     final response =
         await _client.from('users').select('*, user_profiles(*)').execute();
 
@@ -46,7 +43,6 @@ class UserRepository {
   }
 
   Future<ExtendedUser?> getUserById(String id) async {
-    // Buscar usuário específico com join
     final response = await _client
         .from('users')
         .select('*, user_profiles(*)')
@@ -66,7 +62,6 @@ class UserRepository {
   }
 
   Future<void> updateUser(ExtendedUser updatedUser) async {
-    // Atualizar dados na tabela "users"
     final userResponse = await _client
         .from('users')
         .update(updatedUser.toMap())
@@ -77,7 +72,6 @@ class UserRepository {
       throw Exception('Error updating user: ${userResponse.error!.message}');
     }
 
-    // Atualizar dados na tabela "user_profiles"
     final profileResponse = await _client
         .from('user_profiles')
         .update(updatedUser.toProfileMap())
@@ -91,7 +85,6 @@ class UserRepository {
   }
 
   Future<void> deleteUser(String id) async {
-    // Deletar da tabela "user_profiles"
     final profileResponse =
         await _client.from('user_profiles').delete().eq('id', id).execute();
     if (profileResponse.error != null) {
@@ -99,7 +92,6 @@ class UserRepository {
           'Error deleting user profile: ${profileResponse.error!.message}');
     }
 
-    // Deletar da tabela "users"
     final userResponse =
         await _client.from('users').delete().eq('id', id).execute();
     if (userResponse.error != null) {
@@ -110,7 +102,6 @@ class UserRepository {
   Future<File> generateUserPdf(ExtendedUser user) async {
     final pdf = pw.Document();
 
-    // Obter localização atual
     final location = Location();
     LocationData locationData;
 
@@ -136,7 +127,6 @@ class UserRepository {
       throw Exception('Erro ao obter localização: $e');
     }
 
-    // Adicionar conteúdo ao PDF
     pdf.addPage(
       pw.Page(
         build: (context) => pw.Column(
@@ -153,7 +143,7 @@ class UserRepository {
                 'Endereço: ${user.street ?? "N/A"}, ${user.locality ?? "N/A"}, ${user.country ?? "N/A"}'),
             pw.Text('CEP: ${user.postalCode ?? "N/A"}'),
             pw.Text('Status: ${user.status.name}'),
-            pw.Spacer(), // Adiciona espaço flexível para empurrar o rodapé para o fim
+            pw.Spacer(), 
             pw.Text(
               'Gerado em: ${DateTime.now()} | Coordenadas: ${locationData.latitude}, ${locationData.longitude}',
               style: pw.TextStyle(fontSize: 10, color: PdfColors.grey),
@@ -163,7 +153,6 @@ class UserRepository {
       ),
     );
 
-    // Salvar PDF em um arquivo temporário
     final output = await getTemporaryDirectory();
     final file = File('${output.path}/user_${user.supabaseUser.id}.pdf');
     await file.writeAsBytes(await pdf.save());
