@@ -24,7 +24,6 @@ class ExtendedUser {
     required this.status,
   });
 
-  /// Converts the profile-related fields of the user into a map.
   Map<String, dynamic> toProfileMap() {
     return {
       'id': supabaseUser.id,
@@ -37,7 +36,6 @@ class ExtendedUser {
     };
   }
 
-  /// Factory constructor to create an ExtendedUser from a map and a Supabase user.
   factory ExtendedUser.fromMap(Map<String, dynamic> userMap, User supabaseUser) {
     return ExtendedUser(
       supabaseUser: supabaseUser,
@@ -50,7 +48,6 @@ class ExtendedUser {
     );
   }
 
-  /// Converts the full user information (including Supabase user data) into a map.
   Map<String, dynamic> toMap() {
     return {
       'id': supabaseUser.id,
@@ -65,13 +62,11 @@ class ExtendedUser {
     };
   }
 
-  /// String representation of the user for debugging purposes.
   @override
   String toString() {
     return 'ExtendedUser(id: ${supabaseUser.id}, email: ${supabaseUser.email}, phone: $phone, street: $street, locality: $locality, postalCode: $postalCode, country: $country, status: $status)';
   }
 
-  /// Equality operator to compare two ExtendedUser objects.
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
@@ -90,7 +85,6 @@ class ExtendedUser {
     return false;
   }
 
-  /// Hash code based on user properties.
   @override
   int get hashCode => Object.hash(
         supabaseUser.id,
