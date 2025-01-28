@@ -11,7 +11,7 @@ class UserService {
     try {
       await _userRepository.createUser(user);
     } catch (e) {
-      throw Exception('Erro ao criar o usuário: $e');
+      throw Exception('error searching user: $e');
     }
   }
 
@@ -19,7 +19,7 @@ class UserService {
     try {
       return await _userRepository.getAllUsers();
     } catch (e) {
-      throw Exception('Erro ao buscar usuários: $e');
+      throw Exception('error searching users: $e');
     }
   }
 
@@ -27,7 +27,7 @@ class UserService {
     try {
       return await _userRepository.getUserById(id);
     } catch (e) {
-      throw Exception('Erro ao buscar o usuário: $e');
+      throw Exception('error searching user: $e');
     }
   }
 
@@ -35,7 +35,7 @@ class UserService {
     try {
       await _userRepository.updateUser(updatedUser);
     } catch (e) {
-      throw Exception('Erro ao atualizar o usuário: $e');
+      throw Exception('error on updating user: $e');
     }
   }
 
@@ -43,7 +43,7 @@ class UserService {
     try {
       await _userRepository.deleteUser(id);
     } catch (e) {
-      throw Exception('Erro ao deletar o usuário: $e');
+      throw Exception('error on deleting user: $e');
     }
   }
 
@@ -51,7 +51,7 @@ class UserService {
     try {
       return await _userRepository.generateUserPdf(user);
     } catch (e) {
-      throw Exception('Erro ao gerar o PDF: $e');
+      throw Exception('error generating archive: $e');
     }
   }
 }
