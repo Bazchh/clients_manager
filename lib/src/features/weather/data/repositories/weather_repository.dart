@@ -4,11 +4,11 @@ import 'package:clients_manager/src/features/weather/domain/models/weather_model
 
 class WeatherRepository {
   final String apiKey;
-  final String baseUrl;
+  final String apibaseUrl;
 
   WeatherRepository({
     required this.apiKey,
-    this.baseUrl = 'https://api.openweathermap.org/data/3.0/onecall',
+    this.apibaseUrl = 'https://api.openweathermap.org/data/3.0/onecall',
   });
 
   // Método para buscar os dados do clima diário
@@ -20,7 +20,7 @@ class WeatherRepository {
     String lang = 'en',
   }) async {
     final url = Uri.parse(
-      '$baseUrl?lat=$latitude&lon=$longitude&exclude=$exclude&units=$units&lang=$lang&appid=$apiKey',
+      '$apibaseUrl?lat=$latitude&lon=$longitude&exclude=$exclude&units=$units&lang=$lang&appid=$apiKey',
     );
 
     try {
