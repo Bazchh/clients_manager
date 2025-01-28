@@ -27,7 +27,6 @@ class DailyWeather {
     required this.precipitationProbability,
   });
 
-  // Método para converter um JSON em um objeto DailyWeather
   factory DailyWeather.fromJson(Map<String, dynamic> json) {
     return DailyWeather(
       date: DateTime.fromMillisecondsSinceEpoch(json['dt'] * 1000),
@@ -41,7 +40,7 @@ class DailyWeather {
       windSpeed: json['wind_speed'].toDouble(),
       windDirection: json['wind_deg'],
       uvi: json['uvi'].toDouble(),
-      precipitationProbability: (json['pop'] * 100), // Convertendo para porcentagem
+      precipitationProbability: (json['pop'] * 100), 
     );
   }
 }

@@ -11,7 +11,6 @@ class WeatherRepository {
     this.apibaseUrl = 'https://api.openweathermap.org/data/3.0/onecall',
   });
 
-  // Método para buscar os dados do clima diário
   Future<List<DailyWeather>> fetchDailyWeather({
     required double latitude,
     required double longitude,
@@ -30,7 +29,6 @@ class WeatherRepository {
         final data = json.decode(response.body);
         final List<dynamic> dailyJson = data['daily'];
 
-        // Convertendo a lista JSON para uma lista de objetos DailyWeather
         return dailyJson.map((json) => DailyWeather.fromJson(json)).toList();
       } else {
         throw Exception('Erro ao buscar os dados do clima: ${response.reasonPhrase}');
