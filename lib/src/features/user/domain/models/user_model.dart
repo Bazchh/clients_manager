@@ -7,6 +7,7 @@ enum Status {
 
 class ExtendedUser {
   final User supabaseUser;
+  final String? name;
   final String? phone;
   final String? street;
   final String? locality;
@@ -16,6 +17,7 @@ class ExtendedUser {
 
   ExtendedUser({
     required this.supabaseUser,
+    this.name,
     this.phone,
     this.street,
     this.locality,
@@ -38,8 +40,9 @@ class ExtendedUser {
 
   factory ExtendedUser.fromMap(Map<String, dynamic> userMap, User supabaseUser) {
     return ExtendedUser(
-      supabaseUser: supabaseUser,
+      name: userMap['name'],
       phone: userMap['phone'],
+      supabaseUser: supabaseUser,
       street: userMap['street'],
       locality: userMap['locality'],
       postalCode: userMap['postal_code'],
@@ -52,7 +55,7 @@ class ExtendedUser {
     return {
       'id': supabaseUser.id,
       'email': supabaseUser.email,
-      'name': supabaseUser.userMetadata['name'] ?? '',
+      'name': name,
       'phone': phone,
       'street': street,
       'locality': locality,
