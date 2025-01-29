@@ -26,11 +26,11 @@ class UserOptionsButton extends StatelessWidget {
       itemBuilder: (context) => [
         const PopupMenuItem(
           value: 'edit',
-          child: Text('Editar Usuário'),
+          child: Text('Edit User'),
         ),
         const PopupMenuItem(
           value: 'delete',
-          child: Text('Excluir Usuário'),
+          child: Text('Delete User'),
         ),
       ],
     );
@@ -40,12 +40,12 @@ class UserOptionsButton extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Excluir Usuário'),
-        content: Text('Tem certeza de que deseja excluir $userName?'),
+        title: const Text('Delete User'),
+        content: Text('Are you sure you want to delete $userName?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+            child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () {
@@ -53,7 +53,7 @@ class UserOptionsButton extends StatelessWidget {
               onDelete();
             },
             child: const Text(
-              'Excluir',
+              'Delete',
               style: TextStyle(color: Colors.red),
             ),
           ),
