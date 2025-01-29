@@ -114,36 +114,7 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
         ),
         TextButton(
           onPressed: () async {
-            // Criar o usuário no Supabase com email e senha
-            final response = await Supabase.instance.client.auth.signUp(
-              email: _emailController.text,
-              password: _passwordController.text,
-            );
-
-            if (response.session == null) {
-              String errorMessage = 'Unknown error';
-              if (response.session != 200) {
-                errorMessage =
-                    'Failed to create user. Status: ${response.session}';
-              }
-
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(errorMessage)),
-              );
-              return;
-            }
-
-            // Usar o supabaseUser para criar o ExtendedUser
-            final newUser = ExtendedUser(
-              id: response.user!.id, // Agora passamos apenas o ID
-              email: response.user!.email ?? '', // Garantindo que não seja nulo
-              name: _nameController.text,
-              phone: _phoneController.text,
-              street: _streetController.text,
-              postalCode: _postalCodeController.text,
-              country: _countryController.text,
-              status: _selectedStatus,
-            );
+               
 
             final success = await widget.userController.createUser(newUser);
             if (success) {
