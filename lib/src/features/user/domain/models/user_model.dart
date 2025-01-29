@@ -29,6 +29,7 @@ class ExtendedUser {
   Map<String, dynamic> toProfileMap() {
     return {
       'id': supabaseUser.id,
+      'name': name,
       'phone': phone,
       'street': street,
       'locality': locality,
@@ -48,6 +49,27 @@ class ExtendedUser {
       postalCode: userMap['postal_code'],
       country: userMap['country'],
       status: Status.values.firstWhere((e) => e.name == userMap['status']),
+    );
+  }
+
+  ExtendedUser copyWith({
+    String? name,
+    String? phone,
+    String? street,
+    String? locality,
+    String? postalCode,
+    String? country,
+    Status? status,
+  }) {
+    return ExtendedUser(
+      supabaseUser: this.supabaseUser, // Não pode mudar o usuário do Supabase, então não inclui aqui
+      name: name ?? this.name,
+      phone: phone ?? this.phone,
+      street: street ?? this.street,
+      locality: locality ?? this.locality,
+      postalCode: postalCode ?? this.postalCode,
+      country: country ?? this.country,
+      status: status ?? this.status,
     );
   }
 
@@ -76,6 +98,7 @@ class ExtendedUser {
 
     if (other is ExtendedUser) {
       return runtimeType == other.runtimeType &&
+          name == other.name &&
           supabaseUser.id == other.supabaseUser.id &&
           phone == other.phone &&
           street == other.street &&
@@ -91,6 +114,7 @@ class ExtendedUser {
   @override
   int get hashCode => Object.hash(
         supabaseUser.id,
+        name,
         phone,
         street,
         locality,
