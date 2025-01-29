@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:clients_manager/src/features/user/domain/models/user_model.dart';
+import 'package:clients_manager/src/features/user/ui/widgets/user_options_button_widget.dart';
 
 class UserCard extends StatelessWidget {
   final int index;
   final ExtendedUser user;
+  final VoidCallback onDelete;
+  final VoidCallback onEdit;
 
   const UserCard({
     Key? key,
     required this.index,
     required this.user,
+    required this.onDelete,
+    required this.onEdit,
   }) : super(key: key);
 
   @override
@@ -24,7 +29,7 @@ class UserCard extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Client Number
+            // Número do Cliente
             CircleAvatar(
               backgroundColor: Colors.blueAccent,
               child: Text(
@@ -33,29 +38,26 @@ class UserCard extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 16.0),
-            // Main Information
+            // Informações do Usuário
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Name
                   Text(
-                    user.name ?? 'Name not available',
+                    user.name ?? 'Nome não disponível',
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16.0,
                     ),
                   ),
                   const SizedBox(height: 4.0),
-                  // Email
                   Text(
-                    user.supabaseUser.email ?? 'Email not available',
+                    user.supabaseUser.email ?? 'E-mail não disponível',
                     style: const TextStyle(color: Colors.grey),
                   ),
                   const SizedBox(height: 4.0),
-                  // Phone
                   Text(
-                    user.phone ?? 'Phone not available',
+                    user.phone ?? 'Telefone não disponível',
                     style: const TextStyle(color: Colors.grey),
                   ),
                 ],
@@ -66,6 +68,13 @@ class UserCard extends StatelessWidget {
             Icon(
               user.status == Status.active ? Icons.check_circle : Icons.cancel,
               color: user.status == Status.active ? Colors.green : Colors.red,
+            ),
+            const SizedBox(width: 16.0),
+            // Botão de Opções (Editar/Excluir)
+            UserOptionsButton(
+              onEdit: onEdit,
+              onDelete: onDelete,
+              userName: user.name ?? 'Usuário',
             ),
           ],
         ),
