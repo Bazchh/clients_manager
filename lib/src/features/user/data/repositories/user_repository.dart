@@ -69,7 +69,7 @@ class UserRepository {
   Future<void> updateUser(ExtendedUser updatedUser) async {
     final userResponse = await _client
         .from('auth.users')
-        .update(updatedUser.toMap())
+        .update(updatedUser.toProfileMap())
         .eq('id', updatedUser.id)
         .select()
         .single();
