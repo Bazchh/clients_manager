@@ -7,9 +7,9 @@ class UserService {
 
   UserService(this._userRepository);
 
-  Future<void> createUser(ExtendedUser user) async {
+  Future<void> createUser(String email, String password) async {
     try {
-      await _userRepository.createUser(user);
+      await _userRepository.createUser(email, password);
     } catch (e) {
       throw Exception('error searching user: $e');
     }
