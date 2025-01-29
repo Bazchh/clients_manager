@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:clients_manager/src/features/user/ui/widgets/user_card_widget.dart';
 import 'package:clients_manager/src/features/user/ui/controllers/user_controller.dart';
-import 'package:clients_manager/src/features/user/ui/widgets/client_modal.dart';
+import 'package:clients_manager/src/features/user/ui/widgets/edit_client_modal.dart';
 
 class ClientListWidget extends StatelessWidget {
   const ClientListWidget({Key? key}) : super(key: key);
