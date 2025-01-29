@@ -116,7 +116,7 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
           onPressed: () async {
                
 
-            final success = await widget.userController.createUser(newUser);
+            final success = await widget.userController.createUser(_emailController.text, _passwordController.text);
             if (success) {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
