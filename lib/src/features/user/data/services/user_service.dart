@@ -9,7 +9,8 @@ class UserService {
 
   Future<ExtenderUser> createUser(String email, String password) async {
     try {
-      await _userRepository.createUser(email, password);
+     final user await _userRepository.createUser(email, password);
+      return user;
     } catch (e) {
       throw Exception('error searching user: $e');
     }
