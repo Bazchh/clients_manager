@@ -9,7 +9,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class UserRepository {
   final SupabaseClient _client = Supabase.instance.client;
 
-  Future<void> createUser(String email, String password) async {
+  Future<ExtenderUser> createUser(String email, String password) async {
     try {
       
       // Inserir perfil na tabela user_profiles
@@ -53,7 +53,7 @@ class UserRepository {
         'status': user.status.toString(),
         'created_at': DateTime.now().toIso8601String(),
       });
-
+      return user;
       print("sucess on creating user!");
     } catch (error) {
       print("Erro ao criar usuário: $error");
