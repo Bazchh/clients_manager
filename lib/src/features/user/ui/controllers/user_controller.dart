@@ -32,7 +32,7 @@ class UserController extends ChangeNotifier {
 
   Future<bool> createUser(String email, String password) async {
   try {
-    await userService.createUser(email, password);
+  final newUser =  await userService.createUser(email, password);
     _users.add(newUser);
     notifyListeners();
     return true; // Indica sucesso
