@@ -9,10 +9,15 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class UserRepository {
   final SupabaseClient _client = Supabase.instance.client;
 
-  Future<void> createUser(ExtendedUser user) async {
+  Future<void> createUser(String email, String password) async {
     try {
       
       // Inserir perfil na tabela user_profiles
+
+
+      
+    
+      
       await _client.from('user_profiles').insert({
         'id': user.id, // ID do usuário criado no auth
         'name': user.name,
