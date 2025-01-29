@@ -29,7 +29,7 @@ class UserCard extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Número do Cliente
+            // Client Number
             CircleAvatar(
               backgroundColor: Colors.blueAccent,
               child: Text(
@@ -38,13 +38,13 @@ class UserCard extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 16.0),
-            // Informações do Usuário
+            // User Information
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    user.name ?? 'Nome não disponível',
+                    user.name ?? 'Name not available',
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16.0,
@@ -52,12 +52,12 @@ class UserCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4.0),
                   Text(
-                    user.supabaseUser.email ?? 'E-mail não disponível',
+                    user.supabaseUser.email ?? 'Email not available',
                     style: const TextStyle(color: Colors.grey),
                   ),
                   const SizedBox(height: 4.0),
                   Text(
-                    user.phone ?? 'Telefone não disponível',
+                    user.phone ?? 'Phone not available',
                     style: const TextStyle(color: Colors.grey),
                   ),
                 ],
@@ -70,11 +70,11 @@ class UserCard extends StatelessWidget {
               color: user.status == Status.active ? Colors.green : Colors.red,
             ),
             const SizedBox(width: 16.0),
-            // Botão de Opções (Editar/Excluir)
+            // Options Button (Edit/Delete)
             UserOptionsButton(
               onEdit: onEdit,
               onDelete: onDelete,
-              userName: user.name ?? 'Usuário',
+              userName: user.name ?? 'User',
             ),
           ],
         ),
