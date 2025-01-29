@@ -1,56 +1,63 @@
 import 'package:flutter/material.dart';
-import 'package:clients_manager/src/features/user/domain/models/user_model.dart';
-import 'package:clients_manager/src/features/user/data/services/user_service.dart';
+import 'package:provider/provider.dart';
 import 'package:clients_manager/src/features/user/ui/widgets/user_card_widget.dart';
+import 'package:clients_manager/src/features/user/ui/controllers/user_controller.dart';
+import 'package:clients_manager/src/features/user/ui/widgets/client_modal.dart';
 
-class ClientListWidget extends StatefulWidget {
-  final UserService userService;
-
-  const ClientListWidget({Key? key, required this.userService}) : super(key: key);
-
-  @override
-  State<ClientListWidget> createState() => _ClientListWidgetState();
-}
-
-class _ClientListWidgetState extends State<ClientListWidget> {
-  late Future<List<ExtendedUser>> _clientsFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _clientsFuture = widget.userService.getAllUsers();
-  }
+class ClientListWidget extends StatelessWidget {
+  const ClientListWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final userController = Provider.of<UserController>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Client List'),
-      ),
-      body: FutureBuilder<List<ExtendedUser>>(
-        future: _clientsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No clients found.'));
-          }
-
-          final clients = snapshot.data!;
-
-          return ListView.builder(
-            itemCount: clients.length,
-            itemBuilder: (context, index) {
-              return UserCard(
-                index: index,
-                user: clients[index],
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () {
+              userController.loadUsers();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Refreshing clients...')),
               );
             },
-          );
-        },
+          ),
+        ],
       ),
+      body: userController.isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : userController.errorMessage != null
+              ? Center(child: Text(userController.errorMessage!))
+              : userController.users.isEmpty
+                  ? const Center(child: Text('No clients found.'))
+                  : ListView.builder(
+                      itemCount: userController.users.length,
+                      itemBuilder: (context, index) {
+                        final user = userController.users[index];
+                        return UserCard(
+                          index: index,
+                          user: user,
+                          onEdit: () => showDialog(
+                            context: context,
+                            builder: (context) => EditUserDialog(
+                              user: user,
+                              userController: userController,
+                            ),
+                          ),
+                          onDelete: () async {
+                            await userController.deleteUser(user.supabaseUser.id);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Deleted user: ${user.name}'),
+                                duration: const Duration(seconds: 2),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
     );
   }
 }
