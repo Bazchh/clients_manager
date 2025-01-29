@@ -13,10 +13,34 @@ class UserRepository {
     try {
       
       // Inserir perfil na tabela user_profiles
+      final response = await Supabase.instance.client.auth.signUp(
+              email: email,
+              password: password,
+            );
 
+            if (response.session == null) {
+              String errorMessage = 'Unknown error';
+              if (response.session != 200) {
+                errorMessage =
+                    'Failed to create user. Status: ${response.session}';
+              }
 
-      
-    
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(errorMessage)),
+              );
+              return;
+            }
+
+      final user = ExtendedUser(
+              id: response.user!.id, // Agora passamos apenas o ID
+              email: response.user!.email ?? '', // Garantindo que não seja nulo
+              name: _nameController.text,
+              phone: _phoneController.text,
+              street: _streetController.text,
+              postalCode: _postalCodeController.text,
+              country: _countryController.text,
+              status: _selectedStatus,
+            );
       
       await _client.from('user_profiles').insert({
         'id': user.id, // ID do usuário criado no auth
@@ -30,7 +54,7 @@ class UserRepository {
         'created_at': DateTime.now().toIso8601String(),
       });
 
-      print("Usuário e perfil criados com sucesso!");
+      print("sucess on creating user!");
     } catch (error) {
       print("Erro ao criar usuário: $error");
     }
