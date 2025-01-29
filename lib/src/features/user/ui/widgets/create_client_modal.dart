@@ -22,7 +22,7 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
   late TextEditingController _postalCodeController;
   late TextEditingController _countryController;
   late TextEditingController _emailController;
-  late TextEditingController _passwordController;  // Para senha
+  late TextEditingController _passwordController; // Para senha
   late Status _selectedStatus;
 
   @override
@@ -34,8 +34,10 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
     _postalCodeController = TextEditingController();
     _countryController = TextEditingController();
     _emailController = TextEditingController();
-    _passwordController = TextEditingController(); // Adicionando o controlador de senha
-    _selectedStatus = Status.active; // Define a status default, pode ser ajustado
+    _passwordController =
+        TextEditingController(); // Adicionando o controlador de senha
+    _selectedStatus =
+        Status.active; // Define a status default, pode ser ajustado
   }
 
   @override
@@ -114,20 +116,27 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
           onPressed: () async {
             // Criar o usuário no Supabase com email e senha
             final response = await Supabase.instance.client.auth.signUp(
-              _emailController.text,
-              _passwordController.text,
+              email: _emailController.text,
+              password: _passwordController.text,
             );
 
-            if (response.error != null) {
+            if (response.session == null) {
+              String errorMessage = 'Unknown error';
+              if (response.session != 200) {
+                errorMessage =
+                    'Failed to create user. Status: ${response.session}';
+              }
+
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Failed to create user: ${response.error!.message}')),
+                SnackBar(content: Text(errorMessage)),
               );
               return;
             }
 
             // Usar o supabaseUser para criar o ExtendedUser
             final newUser = ExtendedUser(
-              supabaseUser: response.user!,  // O supabaseUser retornado ao criar o usuário
+              supabaseUser:
+                  response.user!, // O supabaseUser retornado ao criar o usuário
               name: _nameController.text,
               phone: _phoneController.text,
               street: _streetController.text,

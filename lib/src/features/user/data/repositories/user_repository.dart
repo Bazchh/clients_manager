@@ -11,34 +11,38 @@ class UserRepository {
 
   Future<void> createUser(ExtendedUser user) async {
     final userResponse =
-        await _client.from('users').insert(user.toMap()).execute();
-    if (userResponse.error != null) {
-      throw Exception('Error creating user: ${userResponse.error!.message}');
+        await _client.from('users').insert(user.toMap()).select().single();
+
+    if (userResponse == null) {
+      throw Exception('Error creating user: Response is null');
     }
 
     final profileResponse = await _client
         .from('user_profiles')
         .insert(user.toProfileMap())
-        .execute();
-    if (profileResponse.error != null) {
-      throw Exception(
-          'Error creating user profile: ${profileResponse.error!.message}');
+        .select()
+        .single();
+
+    if (profileResponse == null) {
+      throw Exception('Error creating user profile: Response is null');
     }
   }
 
   Future<List<ExtendedUser>> getAllUsers() async {
-    final response =
-        await _client.from('users').select('*, user_profiles(*)').execute();
+    final List<dynamic> response =
+        await _client.from('users').select('*, user_profiles(*)');
 
-    if (response.error != null) {
-      throw Exception('Error fetching users: ${response.error!.message}');
+    if (response.isEmpty) {
+      throw Exception('Error fetching users: No data returned');
     }
 
-    final List<dynamic> dataList = response.data as List<dynamic>;
-
-    return dataList.map((data) {
+    return response.map((data) {
       final profileData = data['user_profiles'] ?? {};
-      return ExtendedUser.fromMap(profileData, User.fromJson(data));
+      final user = User.fromJson(data);
+      if (user == null) {
+        throw Exception('Error parsing user data');
+      }
+      return ExtendedUser.fromMap(profileData, user);
     }).toList();
   }
 
@@ -47,18 +51,16 @@ class UserRepository {
         .from('users')
         .select('*, user_profiles(*)')
         .eq('id', id)
-        .single()
-        .execute();
+        .maybeSingle();
 
-    if (response.error != null) {
-      throw Exception('Error fetching user: ${response.error!.message}');
+    if (response == null) return null;
+
+    final profileData = response['user_profiles'] ?? {};
+    final user = User.fromJson(response);
+    if (user == null) {
+      throw Exception('Error parsing user data');
     }
-
-    final data = response.data;
-    if (data == null) return null;
-
-    final profileData = data['user_profiles'] ?? {};
-    return ExtendedUser.fromMap(profileData, User.fromJson(data));
+    return ExtendedUser.fromMap(profileData, user);
   }
 
   Future<void> updateUser(ExtendedUser updatedUser) async {
@@ -66,36 +68,46 @@ class UserRepository {
         .from('users')
         .update(updatedUser.toMap())
         .eq('id', updatedUser.supabaseUser.id)
-        .execute();
+        .select()
+        .single();
 
-    if (userResponse.error != null) {
-      throw Exception('Error updating user: ${userResponse.error!.message}');
+    if (userResponse == null) {
+      throw Exception('Error updating user: No data returned');
     }
 
     final profileResponse = await _client
         .from('user_profiles')
         .update(updatedUser.toProfileMap())
         .eq('id', updatedUser.supabaseUser.id)
-        .execute();
+        .select()
+        .single();
 
-    if (profileResponse.error != null) {
-      throw Exception(
-          'Error updating user profile: ${profileResponse.error!.message}');
+    if (profileResponse == null) {
+      throw Exception('Error updating user profile: No data returned');
     }
   }
 
   Future<void> deleteUser(String id) async {
-    final profileResponse =
-        await _client.from('user_profiles').delete().eq('id', id).execute();
-    if (profileResponse.error != null) {
-      throw Exception(
-          'Error deleting user profile: ${profileResponse.error!.message}');
+    final profileResponse = await _client
+        .from('user_profiles')
+        .delete()
+        .eq('id', id)
+        .select()
+        .maybeSingle();
+
+    if (profileResponse == null) {
+      throw Exception('Error deleting user profile: No data returned');
     }
 
-    final userResponse =
-        await _client.from('users').delete().eq('id', id).execute();
-    if (userResponse.error != null) {
-      throw Exception('Error deleting user: ${userResponse.error!.message}');
+    final userResponse = await _client
+        .from('users')
+        .delete()
+        .eq('id', id)
+        .select()
+        .maybeSingle();
+
+    if (userResponse == null) {
+      throw Exception('Error deleting user: No data returned');
     }
   }
 
@@ -143,7 +155,7 @@ class UserRepository {
                 'Endereço: ${user.street ?? "N/A"}, ${user.locality ?? "N/A"}, ${user.country ?? "N/A"}'),
             pw.Text('CEP: ${user.postalCode ?? "N/A"}'),
             pw.Text('Status: ${user.status.name}'),
-            pw.Spacer(), 
+            pw.Spacer(),
             pw.Text(
               'Gerado em: ${DateTime.now()} | Coordenadas: ${locationData.latitude}, ${locationData.longitude}',
               style: pw.TextStyle(fontSize: 10, color: PdfColors.grey),
