@@ -3,25 +3,47 @@ import 'package:clients_manager/src/features/weather/ui/controllers/weather_cont
 import 'package:clients_manager/src/features/weather/data/services/weather_service.dart';
 import 'package:clients_manager/src/features/weather/ui/widgets/weather_card_widget.dart';
 import 'package:clients_manager/src/features/weather/data/repositories/weather_repository.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:clients_manager/src/features/user/ui/pages/clients_home_page.dart';
 
-Future<void> main() async {
-  await Supabase.initialize(
-    url: 'https://ttxorfpxadojffxpgbub.supabase.co',
-    anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0eG9yZnB4YWRvamZmeHBnYnViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc4NTIwOTYsImV4cCI6MjA1MzQyODA5Nn0.bHp-RY0eu_8dbX5iCvWk-_9ylucaJVPN9PzmuN2_Avk',
-  );
-  runApp(const MyApp());
+class MainScreen extends StatefulWidget {
+  const MainScreen({Key? key}) : super(key: key);
+
+  @override
+  State<MainScreen> createState() => _MainScreenState();
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class _MainScreenState extends State<MainScreen> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _pages = [
+    const WeatherHomePage(),
+    const ClientsHomePage(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: const WeatherHomePage(),
+    return Scaffold(
+      body: _pages[_selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.cloud),
+            label: "Weather",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.people),
+            label: "Clients",
+          ),
+        ],
+      ),
     );
   }
 }
