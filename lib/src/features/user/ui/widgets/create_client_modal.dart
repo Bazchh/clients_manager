@@ -135,8 +135,8 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
 
             // Usar o supabaseUser para criar o ExtendedUser
             final newUser = ExtendedUser(
-              supabaseUser:
-                  response.user!, // O supabaseUser retornado ao criar o usuário
+              id: response.user!.id, // Agora passamos apenas o ID
+              email: response.user!.email ?? '', // Garantindo que não seja nulo
               name: _nameController.text,
               phone: _phoneController.text,
               street: _streetController.text,

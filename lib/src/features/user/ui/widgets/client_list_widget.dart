@@ -61,7 +61,7 @@ class ClientListWidget extends StatelessWidget {
                             ),
                           ),
                           onDelete: () async {
-                            bool success = await userController.deleteUser(user.supabaseUser.id);
+                            bool success = await userController.deleteUser(user.id);
                             if (success) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(

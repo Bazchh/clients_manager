@@ -33,7 +33,7 @@ class _EditUserDialogState extends State<EditUserDialog> {
     _streetController = TextEditingController(text: widget.user.street);
     _postalCodeController = TextEditingController(text: widget.user.postalCode);
     _countryController = TextEditingController(text: widget.user.country);
-    _emailController = TextEditingController(text: widget.user.supabaseUser.email);
+    _emailController = TextEditingController(text: widget.user.email);
     _selectedStatus = widget.user.status;
   }
 

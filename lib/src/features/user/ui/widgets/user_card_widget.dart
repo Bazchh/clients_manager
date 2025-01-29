@@ -52,7 +52,7 @@ class UserCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4.0),
                   Text(
-                    user.supabaseUser.email ?? 'Email not available',
+                    user.email ?? 'Email not available',
                     style: const TextStyle(color: Colors.grey),
                   ),
                   const SizedBox(height: 4.0),

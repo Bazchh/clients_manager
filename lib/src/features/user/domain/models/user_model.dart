@@ -1,12 +1,9 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
 
-enum Status {
-  active,
-  inactive,
-}
+enum Status { active, inactive }
 
 class ExtendedUser {
-  final User supabaseUser;
+  final String id;
+  final String email;
   final String? name;
   final String? phone;
   final String? street;
@@ -16,7 +13,8 @@ class ExtendedUser {
   final Status status;
 
   ExtendedUser({
-    required this.supabaseUser,
+    required this.id,
+    required this.email,
     this.name,
     this.phone,
     this.street,
@@ -26,9 +24,11 @@ class ExtendedUser {
     required this.status,
   });
 
+  /// Converte o objeto para um mapa que será salvo no banco
   Map<String, dynamic> toProfileMap() {
     return {
-      'id': supabaseUser.id,
+      'id': id,
+      'email': email,
       'name': name,
       'phone': phone,
       'street': street,
@@ -36,23 +36,31 @@ class ExtendedUser {
       'postal_code': postalCode,
       'country': country,
       'status': status.name,
+      'created_at': DateTime.now().toIso8601String(),
     };
   }
 
-  factory ExtendedUser.fromMap(Map<String, dynamic> userMap, User supabaseUser) {
+  /// Cria um ExtendedUser a partir de um mapa do banco
+  factory ExtendedUser.fromMap(Map<String, dynamic> userMap) {
     return ExtendedUser(
+      id: userMap['id'],
+      email: userMap['email'],
       name: userMap['name'],
       phone: userMap['phone'],
-      supabaseUser: supabaseUser,
       street: userMap['street'],
       locality: userMap['locality'],
       postalCode: userMap['postal_code'],
       country: userMap['country'],
-      status: Status.values.firstWhere((e) => e.name == userMap['status']),
+      status: Status.values.firstWhere(
+        (e) => e.name == userMap['status'],
+        orElse: () => Status.inactive, // Valor padrão
+      ),
     );
   }
 
+  /// Retorna uma cópia do objeto com valores modificados
   ExtendedUser copyWith({
+    String? email,
     String? name,
     String? phone,
     String? street,
@@ -62,7 +70,8 @@ class ExtendedUser {
     Status? status,
   }) {
     return ExtendedUser(
-      supabaseUser: this.supabaseUser, // Não pode mudar o usuário do Supabase, então não inclui aqui
+      id: id, // ID não pode mudar
+      email: email ?? this.email,
       name: name ?? this.name,
       phone: phone ?? this.phone,
       street: street ?? this.street,
@@ -73,23 +82,9 @@ class ExtendedUser {
     );
   }
 
-  Map<String, dynamic> toMap() {
-    return {
-      'id': supabaseUser.id,
-      'email': supabaseUser.email,
-      'name': name,
-      'phone': phone,
-      'street': street,
-      'locality': locality,
-      'postal_code': postalCode,
-      'country': country,
-      'status': status.name,
-    };
-  }
-
   @override
   String toString() {
-    return 'ExtendedUser(id: ${supabaseUser.id}, email: ${supabaseUser.email}, phone: $phone, street: $street, locality: $locality, postalCode: $postalCode, country: $country, status: $status)';
+    return 'ExtendedUser(id: $id, email: $email, name: $name, phone: $phone, street: $street, locality: $locality, postalCode: $postalCode, country: $country, status: $status)';
   }
 
   @override
@@ -97,9 +92,9 @@ class ExtendedUser {
     if (identical(this, other)) return true;
 
     if (other is ExtendedUser) {
-      return runtimeType == other.runtimeType &&
+      return id == other.id &&
+          email == other.email &&
           name == other.name &&
-          supabaseUser.id == other.supabaseUser.id &&
           phone == other.phone &&
           street == other.street &&
           locality == other.locality &&
@@ -113,7 +108,8 @@ class ExtendedUser {
 
   @override
   int get hashCode => Object.hash(
-        supabaseUser.id,
+        id,
+        email,
         name,
         phone,
         street,

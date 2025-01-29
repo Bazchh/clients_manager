@@ -10,27 +10,30 @@ class UserRepository {
   final SupabaseClient _client = Supabase.instance.client;
 
   Future<void> createUser(ExtendedUser user) async {
-    final userResponse =
-        await _client.from('users').insert(user.toMap()).select().single();
+    try {
+      
+      // Inserir perfil na tabela user_profiles
+      await _client.from('user_profiles').insert({
+        'id': user.id, // ID do usuário criado no auth
+        'name': user.name,
+        'phone': user.phone,
+        'street': user.street,
+        'locality': user.locality,
+        'postal_code': user.postalCode,
+        'country': user.country,
+        'status': user.status.toString(),
+        'created_at': DateTime.now().toIso8601String(),
+      });
 
-    if (userResponse == null) {
-      throw Exception('Error creating user: Response is null');
-    }
-
-    final profileResponse = await _client
-        .from('user_profiles')
-        .insert(user.toProfileMap())
-        .select()
-        .single();
-
-    if (profileResponse == null) {
-      throw Exception('Error creating user profile: Response is null');
+      print("Usuário e perfil criados com sucesso!");
+    } catch (error) {
+      print("Erro ao criar usuário: $error");
     }
   }
 
   Future<List<ExtendedUser>> getAllUsers() async {
     final List<dynamic> response =
-        await _client.from('users').select('*, user_profiles(*)');
+        await _client.from('auth.users').select('*, user_profiles(*)');
 
     if (response.isEmpty) {
       throw Exception('Error fetching users: No data returned');
@@ -48,7 +51,7 @@ class UserRepository {
 
   Future<ExtendedUser?> getUserById(String id) async {
     final response = await _client
-        .from('users')
+        .from('auth.users')
         .select('*, user_profiles(*)')
         .eq('id', id)
         .maybeSingle();
@@ -65,9 +68,9 @@ class UserRepository {
 
   Future<void> updateUser(ExtendedUser updatedUser) async {
     final userResponse = await _client
-        .from('users')
+        .from('auth.users')
         .update(updatedUser.toMap())
-        .eq('id', updatedUser.supabaseUser.id)
+        .eq('id', updatedUser.id)
         .select()
         .single();
 
@@ -78,7 +81,7 @@ class UserRepository {
     final profileResponse = await _client
         .from('user_profiles')
         .update(updatedUser.toProfileMap())
-        .eq('id', updatedUser.supabaseUser.id)
+        .eq('id', updatedUser.id)
         .select()
         .single();
 
@@ -100,7 +103,7 @@ class UserRepository {
     }
 
     final userResponse = await _client
-        .from('users')
+        .from('auth.users')
         .delete()
         .eq('id', id)
         .select()
@@ -148,8 +151,8 @@ class UserRepository {
                 style:
                     pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
             pw.SizedBox(height: 20),
-            pw.Text('ID: ${user.supabaseUser.id}'),
-            pw.Text('Email: ${user.supabaseUser.email}'),
+            pw.Text('ID: ${user.id}'),
+            pw.Text('Email: ${user.email}'),
             pw.Text('Telefone: ${user.phone ?? "N/A"}'),
             pw.Text(
                 'Endereço: ${user.street ?? "N/A"}, ${user.locality ?? "N/A"}, ${user.country ?? "N/A"}'),
@@ -166,7 +169,7 @@ class UserRepository {
     );
 
     final output = await getTemporaryDirectory();
-    final file = File('${output.path}/user_${user.supabaseUser.id}.pdf');
+    final file = File('${output.path}/user_${user.id}.pdf');
     await file.writeAsBytes(await pdf.save());
 
     return file;

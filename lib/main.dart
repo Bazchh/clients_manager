@@ -4,6 +4,43 @@ import 'package:clients_manager/src/features/weather/data/services/weather_servi
 import 'package:clients_manager/src/features/weather/ui/widgets/weather_card_widget.dart';
 import 'package:clients_manager/src/features/weather/data/repositories/weather_repository.dart';
 import 'package:clients_manager/src/features/user/ui/pages/clients_home_page.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:provider/provider.dart';  // Adicionando o Provider aqui
+import 'package:clients_manager/src/features/user/ui/controllers/user_controller.dart';
+import 'package:clients_manager/src/features/user/data/services/user_service.dart'; 
+import 'package:clients_manager/src/features/user/data/repositories/user_repository.dart';  
+
+// Sua chave e URL do Supabase
+Future<void> main() async {
+  await Supabase.initialize(
+    url: 'https://ttxorfpxadojffxpgbub.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0eG9yZnB4YWRvamZmeHBnYnViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc4NTIwOTYsImV4cCI6MjA1MzQyODA5Nn0.bHp-RY0eu_8dbX5iCvWk-_9ylucaJVPN9PzmuN2_Avk',
+  );
+
+  // Envolvendo o MaterialApp com o ChangeNotifierProvider para o UserController
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => UserController(UserService(UserRepository())), // Assumindo que você tenha o UserController pronto
+      child: MyApp(),
+    ),
+  );
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Clients Manager',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const MainScreen(),
+    );
+  }
+}
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -62,7 +99,7 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
   void initState() {
     super.initState();
     _weatherController = WeatherController(
-      weatherService: WeatherService(repository: WeatherRepository(apiKey: '67241a63d0acb68d90993bd49c549327')),
+      weatherService: WeatherService(repository: WeatherRepository(apiKey: 'b3d14b11fac0617b3e39b2e1624b03f5')),
     );
     
     _weatherController.fetchDailyWeather(

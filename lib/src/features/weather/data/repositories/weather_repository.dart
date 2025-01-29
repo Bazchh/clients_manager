@@ -22,6 +22,8 @@ class WeatherRepository {
       '$apibaseUrl?lat=$latitude&lon=$longitude&exclude=$exclude&units=$units&lang=$lang&appid=$apiKey',
     );
 
+    print('Requisição para: $url');
+
     try {
       final response = await http.get(url);
 
@@ -31,10 +33,10 @@ class WeatherRepository {
 
         return dailyJson.map((json) => DailyWeather.fromJson(json)).toList();
       } else {
-        throw Exception('Erro ao buscar os dados do clima: ${response.reasonPhrase}');
+        throw Exception('${response.reasonPhrase}');
       }
     } catch (error) {
-      throw Exception('Erro ao buscar os dados do clima: $error');
+      throw Exception('$error');
     }
   }
 }
