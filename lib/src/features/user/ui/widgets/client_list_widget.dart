@@ -17,11 +17,13 @@ class ClientListWidget extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: () {
-              userController.loadUsers();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Refreshing clients...')),
-              );
+            onPressed: () async {
+              await userController.loadUsers();
+              if (userController.errorMessage == null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Clients refreshed successfully!')),
+                );
+              }
             },
           ),
         ],
@@ -29,7 +31,19 @@ class ClientListWidget extends StatelessWidget {
       body: userController.isLoading
           ? const Center(child: CircularProgressIndicator())
           : userController.errorMessage != null
-              ? Center(child: Text(userController.errorMessage!))
+              ? Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(userController.errorMessage!),
+                      const SizedBox(height: 10),
+                      ElevatedButton(
+                        onPressed: () => userController.loadUsers(),
+                        child: const Text('Tentar novamente'),
+                      ),
+                    ],
+                  ),
+                )
               : userController.users.isEmpty
                   ? const Center(child: Text('No clients found.'))
                   : ListView.builder(
@@ -47,13 +61,22 @@ class ClientListWidget extends StatelessWidget {
                             ),
                           ),
                           onDelete: () async {
-                            await userController.deleteUser(user.supabaseUser.id);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Deleted user: ${user.name}'),
-                                duration: const Duration(seconds: 2),
-                              ),
-                            );
+                            bool success = await userController.deleteUser(user.supabaseUser.id);
+                            if (success) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Deleted user: ${user.name}'),
+                                  duration: const Duration(seconds: 2),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Failed to delete user.'),
+                                  duration: Duration(seconds: 2),
+                                ),
+                              );
+                            }
                           },
                         );
                       },
