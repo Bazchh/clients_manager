@@ -30,16 +30,19 @@ class UserController extends ChangeNotifier {
     }
   }
 
-  Future<void> deleteUser(String userId) async {
-    try {
-      await userService.deleteUser(userId);
-      _users.removeWhere((user) => user.supabaseUser.id == userId);
-      notifyListeners();
-    } catch (e) {
-      _errorMessage = 'Failed to delete user: $e';
-      notifyListeners();
-    }
+  Future<bool> deleteUser(String userId) async {
+  try {
+    await userService.deleteUser(userId);
+    _users.removeWhere((user) => user.supabaseUser.id == userId);
+    notifyListeners();
+    return true; // Indica sucesso
+  } catch (e) {
+    _errorMessage = 'Failed to delete user: $e';
+    notifyListeners();
+    return false; // Indica falha
   }
+}
+
 
   Future<void> editUser(ExtendedUser updatedUser) async {
     try {
