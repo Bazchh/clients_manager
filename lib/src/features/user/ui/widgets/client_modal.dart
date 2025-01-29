@@ -79,7 +79,7 @@ class _EditUserDialogState extends State<EditUserDialog> {
             TextField(
               controller: _emailController,
               decoration: const InputDecoration(labelText: 'Email'),
-              readOnly: true, // E-mail não será editável
+              readOnly: true, 
             ),
             DropdownButton<Status>(
               value: _selectedStatus,
