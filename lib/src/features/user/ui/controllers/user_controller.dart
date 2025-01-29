@@ -30,6 +30,19 @@ class UserController extends ChangeNotifier {
     }
   }
 
+  Future<bool> createUser(ExtendedUser newUser) async {
+  try {
+    await userService.createUser(newUser);
+    _users.add(newUser);
+    notifyListeners();
+    return true; // Indica sucesso
+  } catch (e) {
+    _errorMessage = 'Failed to create user: $e';
+    notifyListeners();
+    return false; // Indica falha
+  }
+}
+
   Future<bool> deleteUser(String userId) async {
   try {
     await userService.deleteUser(userId);
