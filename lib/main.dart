@@ -17,6 +17,16 @@ Future<void> main() async {
     anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0eG9yZnB4YWRvamZmeHBnYnViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc4NTIwOTYsImV4cCI6MjA1MzQyODA5Nn0.bHp-RY0eu_8dbX5iCvWk-_9ylucaJVPN9PzmuN2_Avk',
   );
 
+  final supabase = Supabase.instance.client;
+  try {
+    await supabase.auth.signInWithPassword(
+      email: 'mockadmin@gmail.com', 
+      password: '123456789',     
+    );
+    print('Usuário de serviço autenticado com sucesso.');
+  } catch (e) {
+    print('Erro ao autenticar usuário de serviço: $e');
+  }
   // Envolvendo o MaterialApp com o ChangeNotifierProvider para o UserController
   runApp(
     ChangeNotifierProvider(
