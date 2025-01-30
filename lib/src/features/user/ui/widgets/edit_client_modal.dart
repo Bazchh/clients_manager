@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:clients_manager/src/features/user/domain/models/user_model.dart';
 import 'package:clients_manager/src/features/user/ui/controllers/user_controller.dart';
+import 'package:clients_manager/src/features/user/data/validators/user_validators.dart';
 
 class EditUserDialog extends StatefulWidget {
   final ExtendedUser user;
@@ -48,6 +49,35 @@ class _EditUserDialogState extends State<EditUserDialog> {
     super.dispose();
   }
 
+  bool _validateForm() {
+    final nameError = Validators.validateName(_nameController.text);
+    final phoneError = Validators.validatePhone(_phoneController.text);
+    final streetError = Validators.validateStreet(_streetController.text);
+    final postalCodeError =
+        Validators.validatePostalCode(_postalCodeController.text);
+    final countryError = Validators.validateCountry(_countryController.text);
+    final statusError = Validators.validateStatus(_selectedStatus);
+
+    if (nameError != null ||
+        phoneError != null ||
+        streetError != null ||
+        postalCodeError != null ||
+        countryError != null ||
+        statusError != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(nameError ??
+                phoneError ??
+                streetError ??
+                postalCodeError ??
+                countryError ??
+                statusError!)),
+      );
+      return false;
+    }
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -58,28 +88,44 @@ class _EditUserDialogState extends State<EditUserDialog> {
           children: [
             TextField(
               controller: _nameController,
-              decoration: const InputDecoration(labelText: 'Name'),
+              decoration: InputDecoration(
+                labelText: 'Name',
+                errorText: Validators.validateName(_nameController.text),
+              ),
             ),
             TextField(
               controller: _phoneController,
-              decoration: const InputDecoration(labelText: 'Phone'),
+              decoration: InputDecoration(
+                labelText: 'Phone',
+                errorText: Validators.validatePhone(_phoneController.text),
+              ),
             ),
             TextField(
               controller: _streetController,
-              decoration: const InputDecoration(labelText: 'Street'),
+              decoration: InputDecoration(
+                labelText: 'Street',
+                errorText: Validators.validateStreet(_streetController.text),
+              ),
             ),
             TextField(
               controller: _postalCodeController,
-              decoration: const InputDecoration(labelText: 'Postal Code'),
+              decoration: InputDecoration(
+                labelText: 'Postal Code',
+                errorText:
+                    Validators.validatePostalCode(_postalCodeController.text),
+              ),
             ),
             TextField(
               controller: _countryController,
-              decoration: const InputDecoration(labelText: 'Country'),
+              decoration: InputDecoration(
+                labelText: 'Country',
+                errorText: Validators.validateCountry(_countryController.text),
+              ),
             ),
             TextField(
               controller: _emailController,
               decoration: const InputDecoration(labelText: 'Email'),
-              readOnly: true, 
+              readOnly: true,
             ),
             DropdownButton<Status>(
               value: _selectedStatus,
@@ -91,7 +137,7 @@ class _EditUserDialogState extends State<EditUserDialog> {
               items: Status.values.map((Status status) {
                 return DropdownMenuItem<Status>(
                   value: status,
-                  child: Text(status.name),
+                  child: Text(status.name.toUpperCase()),
                 );
               }).toList(),
               hint: const Text('Select Status'),
@@ -106,6 +152,8 @@ class _EditUserDialogState extends State<EditUserDialog> {
         ),
         TextButton(
           onPressed: () async {
+            if (!_validateForm()) return;
+
             final updatedUser = widget.user.copyWith(
               name: _nameController.text,
               phone: _phoneController.text,
@@ -114,6 +162,7 @@ class _EditUserDialogState extends State<EditUserDialog> {
               country: _countryController.text,
               status: _selectedStatus,
             );
+
             await widget.userController.editUser(updatedUser);
             Navigator.pop(context);
             ScaffoldMessenger.of(context).showSnackBar(
