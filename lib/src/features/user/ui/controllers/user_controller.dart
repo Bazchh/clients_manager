@@ -30,16 +30,16 @@ class UserController extends ChangeNotifier {
     }
   }
 
-  Future<bool> createUser(String email, String password) async {
+  Future<bool> createUser(ExtendedUser newUser, String password) async {
   try {
-  final newUser =  await userService.createUser(email, password);
+    await userService.createUser(newUser, password);
     _users.add(newUser);
     notifyListeners();
-    return true; // Indica sucesso
+    return true; 
   } catch (e) {
     _errorMessage = 'Failed to create user: $e';
     notifyListeners();
-    return false; // Indica falha
+    return false; 
   }
 }
 
@@ -48,11 +48,11 @@ class UserController extends ChangeNotifier {
     await userService.deleteUser(userId);
     _users.removeWhere((user) => user.id == userId);
     notifyListeners();
-    return true; // Indica sucesso
+    return true; 
   } catch (e) {
     _errorMessage = 'Failed to delete user: $e';
     notifyListeners();
-    return false; // Indica falha
+    return false; 
   }
 }
 
