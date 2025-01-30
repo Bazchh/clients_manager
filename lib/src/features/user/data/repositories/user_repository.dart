@@ -65,7 +65,8 @@ class UserRepository {
 
   Future<void> updateUser(ExtendedUser updatedUser) async {
     try {
-      // Atualiza os dados na tabela public.user_profiles
+      print('Attempting to update user profile for user_id: ${updatedUser.id}');
+
       await _client.from('user_profiles').update({
         'name': updatedUser.name,
         'phone': updatedUser.phone,
@@ -74,10 +75,19 @@ class UserRepository {
         'postal_code': updatedUser.postalCode,
         'country': updatedUser.country,
         'status': updatedUser.status.name,
-      }).eq('user_id', updatedUser.id);
+      }).eq('id', updatedUser.id);
+
+      print('User profile updated successfully for user_id: ${updatedUser.id}');
     } catch (e) {
-      print('Error updating user: $e');
-      throw Exception('Failed to update user: $e');
+      print('Error updating user profile: $e');
+      if (e.toString().contains('404')) {
+        throw Exception('User profile not found. Please check the user ID.');
+      } else if (e.toString().contains('permission denied')) {
+        throw Exception(
+            'You do not have permission to update this user profile.');
+      } else {
+        throw Exception('Failed to update user profile: $e');
+      }
     }
   }
 
