@@ -31,7 +31,7 @@ class UserRepository {
   Future<List<ExtendedUser>> getAllUsers() async {
     try {
       final List<dynamic> response =
-        await _client.rpc('get_users_with_profiles');
+          await _client.rpc('get_users_with_profiles');
 
       if (response.isEmpty) {
         throw Exception('Error fetching users: No data returned');
@@ -64,26 +64,20 @@ class UserRepository {
   }
 
   Future<void> updateUser(ExtendedUser updatedUser) async {
-    final userResponse = await _client
-        .from('auth.users')
-        .update(updatedUser.toProfileMap())
-        .eq('id', updatedUser.id)
-        .select()
-        .single();
-
-    if (userResponse == null) {
-      throw Exception('Error updating user: No data returned');
-    }
-
-    final profileResponse = await _client
-        .from('user_profiles')
-        .update(updatedUser.toProfileMap())
-        .eq('id', updatedUser.id)
-        .select()
-        .single();
-
-    if (profileResponse == null) {
-      throw Exception('Error updating user profile: No data returned');
+    try {
+      // Atualiza os dados na tabela public.user_profiles
+      await _client.from('user_profiles').update({
+        'name': updatedUser.name,
+        'phone': updatedUser.phone,
+        'street': updatedUser.street,
+        'locality': updatedUser.locality,
+        'postal_code': updatedUser.postalCode,
+        'country': updatedUser.country,
+        'status': updatedUser.status.name,
+      }).eq('user_id', updatedUser.id);
+    } catch (e) {
+      print('Error updating user: $e');
+      throw Exception('Failed to update user: $e');
     }
   }
 
