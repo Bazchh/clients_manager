@@ -92,26 +92,27 @@ class UserRepository {
   }
 
   Future<void> deleteUser(String id) async {
-    final profileResponse = await _client
-        .from('user_profiles')
-        .delete()
-        .eq('id', id)
-        .select()
-        .maybeSingle();
+    try {
+      // Exclui o perfil do usuário na tabela user_profiles
+      await _client
+          .from('user_profiles')
+          .delete()
+          .eq('id', id); // Certifique-se de usar 'user_id', não 'id'
 
-    if (profileResponse == null) {
-      throw Exception('Error deleting user profile: No data returned');
-    }
+      // Exclui o usuário usando a API de autenticação
+      await _client.auth.admin.deleteUser(id);
 
-    final userResponse = await _client
-        .from('auth.users')
-        .delete()
-        .eq('id', id)
-        .select()
-        .maybeSingle();
-
-    if (userResponse == null) {
-      throw Exception('Error deleting user: No data returned');
+      print('User and profile deleted successfully for user_id: $id');
+    } catch (e) {
+      print('Error deleting user: $e');
+      if (e.toString().contains('406')) {
+        throw Exception(
+            'Error 406: Not Acceptable. Check your delete operation.');
+      } else if (e.toString().contains('permission denied')) {
+        throw Exception('You do not have permission to delete this user.');
+      } else {
+        throw Exception('Failed to delete user: $e');
+      }
     }
   }
 
