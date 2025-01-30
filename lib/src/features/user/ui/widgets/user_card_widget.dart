@@ -29,7 +29,6 @@ class UserCard extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Client Number
             CircleAvatar(
               backgroundColor: Colors.blueAccent,
               child: Text(
@@ -38,7 +37,6 @@ class UserCard extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 16.0),
-            // User Information
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,7 +68,6 @@ class UserCard extends StatelessWidget {
               color: user.status == Status.active ? Colors.green : Colors.red,
             ),
             const SizedBox(width: 16.0),
-            // Options Button (Edit/Delete)
             UserOptionsButton(
               onEdit: onEdit,
               onDelete: onDelete,
