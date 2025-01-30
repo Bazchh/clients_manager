@@ -114,17 +114,48 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
         ),
         TextButton(
           onPressed: () async {
-               
-
-            final success = await widget.userController.createUser(_emailController.text, _passwordController.text);
-            if (success) {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('User created successfully')),
+            try {
+              // Criar o usuário no Supabase com email e senha
+              final response = await Supabase.instance.client.auth.signUp(
+                email: _emailController.text,
+                password: _passwordController.text,
               );
-            } else {
+
+              if (response.user == null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content: Text('Failed to create user: Unknown error')),
+                );
+                return;
+              }
+
+              final newUser = ExtendedUser(
+                id: response.user!.id, 
+                email: response.user!.email ?? '',
+                name: _nameController.text,
+                phone: _phoneController.text,
+                street: _streetController.text,
+                postalCode: _postalCodeController.text,
+                country: _countryController.text,
+                status: _selectedStatus,
+              );
+
+              final success = await widget.userController
+                  .createUser(newUser, _passwordController.text);
+              if (success) {
+                Navigator.pop(context);
+                widget.userController.loadUsers();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('User created successfully')),
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Failed to save user data')),
+                );
+              }
+            } catch (e) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Failed to create user')),
+                SnackBar(content: Text('Error creating user: $e')),
               );
             }
           },
