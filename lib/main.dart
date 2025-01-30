@@ -20,7 +20,7 @@ Future<void> main() async {
   final supabase = Supabase.instance.client;
   try {
     await supabase.auth.signInWithPassword(
-      email: 'mockadmin@gmail.com', 
+      email: 'service_user@gmail.com', 
       password: '123456789',     
     );
     print('Usuário de serviço autenticado com sucesso.');
