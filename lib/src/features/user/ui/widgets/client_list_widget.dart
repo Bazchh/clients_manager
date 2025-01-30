@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:clients_manager/src/features/user/ui/widgets/user_card_widget.dart';
 import 'package:clients_manager/src/features/user/ui/controllers/user_controller.dart';
 import 'package:clients_manager/src/features/user/ui/widgets/edit_client_modal.dart';
+import 'package:clients_manager/src/features/user/ui/widgets/create_client_modal.dart';
 
 class ClientListWidget extends StatelessWidget {
   const ClientListWidget({Key? key}) : super(key: key);
@@ -21,9 +22,24 @@ class ClientListWidget extends StatelessWidget {
               await userController.loadUsers();
               if (userController.errorMessage == null) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Clients refreshed successfully!')),
+                  const SnackBar(
+                      content: Text('Clients refreshed successfully!')),
                 );
               }
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return CreateUserDialog(
+                    userController:
+                        Provider.of<UserController>(context, listen: false),
+                  );
+                },
+              );
             },
           ),
         ],
@@ -61,7 +77,8 @@ class ClientListWidget extends StatelessWidget {
                             ),
                           ),
                           onDelete: () async {
-                            bool success = await userController.deleteUser(user.id);
+                            bool success =
+                                await userController.deleteUser(user.id);
                             if (success) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
