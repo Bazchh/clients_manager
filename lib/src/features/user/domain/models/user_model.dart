@@ -1,4 +1,3 @@
-
 enum Status { active, inactive }
 
 class ExtendedUser {
@@ -36,23 +35,32 @@ class ExtendedUser {
       'postal_code': postalCode,
       'country': country,
       'status': status.name,
-      'created_at': DateTime.now().toIso8601String(),
     };
   }
 
   /// Cria um ExtendedUser a partir de um mapa do banco
-  factory ExtendedUser.fromMap(Map<String, dynamic> userMap) {
+  factory ExtendedUser.fromMap(Map<String, dynamic> data) {
+    // Dados básicos de auth.users
+    final String id = data['id'];
+    final String email = data['email'];
+
+    // Dados adicionais de user_profiles
+    final Map<String, dynamic>? profileData = data['user_profiles'];
+    if (profileData == null || profileData.isEmpty) {
+      throw Exception('Missing user profile data');
+    }
+
     return ExtendedUser(
-      id: userMap['id'],
-      email: userMap['email'],
-      name: userMap['name'],
-      phone: userMap['phone'],
-      street: userMap['street'],
-      locality: userMap['locality'],
-      postalCode: userMap['postal_code'],
-      country: userMap['country'],
+      id: id,
+      email: email,
+      name: profileData['name'],
+      phone: profileData['phone'],
+      street: profileData['street'],
+      locality: profileData['locality'],
+      postalCode: profileData['postal_code'],
+      country: profileData['country'],
       status: Status.values.firstWhere(
-        (e) => e.name == userMap['status'],
+        (e) => e.name == profileData['status'],
         orElse: () => Status.inactive, // Valor padrão
       ),
     );
