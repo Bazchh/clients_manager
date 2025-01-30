@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:clients_manager/src/features/user/ui/widgets/client_list_widget.dart';
 import 'package:clients_manager/src/features/user/ui/controllers/user_controller.dart';
-import 'package:clients_manager/src/features/user/ui/widgets/create_client_modal.dart'; // Importando o dialog
+
 
 class ClientsHomePage extends StatelessWidget {
   const ClientsHomePage({Key? key}) : super(key: key);
@@ -15,29 +15,9 @@ class ClientsHomePage extends StatelessWidget {
       create: (context) => UserController(UserService(UserRepository()))..loadUsers(),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Clients List"),
+          title: const Text("Client Manager"),
           centerTitle: true,
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.add),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return CreateUserDialog(
-                      userController: Provider.of<UserController>(context, listen: false),
-                    );
-                  },
-                );
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.refresh),
-              onPressed: () {
-                Provider.of<UserController>(context, listen: false).loadUsers();
-              },
-            ),
-          ],
+          
         ),
         body: Consumer<UserController>(
           builder: (context, controller, child) {
