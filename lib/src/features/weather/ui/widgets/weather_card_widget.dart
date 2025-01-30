@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:clients_manager/src/features/weather/domain/models/weather_model.dart';
 import 'package:clients_manager/src/features/weather/ui/controllers/weather_controller.dart';
+import 'package:clients_manager/src/features/weather/domain/models/weather_model.dart';
 
 class WeatherCard extends StatelessWidget {
   final WeatherController controller;
@@ -31,19 +31,19 @@ class WeatherCard extends StatelessWidget {
               );
             }
 
-            return ValueListenableBuilder<List<DailyWeather>?>(
-              valueListenable: controller.dailyWeatherNotifier,
+            return ValueListenableBuilder<List<CurrentWeather>?>(
+              valueListenable: controller.weatherListNotifier,
               builder: (context, weatherList, _) {
                 if (weatherList == null || weatherList.isEmpty) {
                   return const Center(
                     child: Text("Nenhum dado meteorológico disponível."),
                   );
                 }
-
-                final weather = weatherList.first; 
+                final weather = weatherList.first;
 
                 return Card(
-                  margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                  margin: const EdgeInsets.symmetric(
+                      vertical: 8.0, horizontal: 16.0),
                   elevation: 4,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -84,16 +84,10 @@ class WeatherCard extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Min: ${weather.minTemp.toStringAsFixed(1)}°C'),
-                            Text('Max: ${weather.maxTemp.toStringAsFixed(1)}°C'),
-                          ],
-                        ),
-                        const SizedBox(height: 4.0),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('Day: ${weather.dayTemp.toStringAsFixed(1)}°C'),
-                            Text('Night: ${weather.nightTemp.toStringAsFixed(1)}°C'),
+                            Text(
+                                'Min: ${weather.tempMin.toStringAsFixed(1)}°C'),
+                            Text(
+                                'Max: ${weather.tempMax.toStringAsFixed(1)}°C'),
                           ],
                         ),
                         const Divider(),
