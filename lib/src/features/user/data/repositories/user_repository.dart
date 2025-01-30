@@ -31,7 +31,7 @@ class UserRepository {
   Future<List<ExtendedUser>> getAllUsers() async {
     try {
       final List<dynamic> response =
-          await _client.from('auth.users').select('*, user_profiles(*)');
+        await _client.rpc('get_users_with_profiles');
 
       if (response.isEmpty) {
         throw Exception('Error fetching users: No data returned');
