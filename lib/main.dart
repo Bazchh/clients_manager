@@ -14,7 +14,7 @@ import 'package:clients_manager/src/features/user/data/repositories/user_reposit
 Future<void> main() async {
   await Supabase.initialize(
     url: 'https://ttxorfpxadojffxpgbub.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0eG9yZnB4YWRvamZmeHBnYnViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc4NTIwOTYsImV4cCI6MjA1MzQyODA5Nn0.bHp-RY0eu_8dbX5iCvWk-_9ylucaJVPN9PzmuN2_Avk',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0eG9yZnB4YWRvamZmeHBnYnViIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTczNzg1MjA5NiwiZXhwIjoyMDUzNDI4MDk2fQ.kD2_ADwhNPbSyPdB81gOljbnlMq4N7XAXA79GrxCqyM',
   );
 
   final supabase = Supabase.instance.client;
