@@ -23,7 +23,6 @@ class ExtendedUser {
     required this.status,
   });
 
-  /// Converte o objeto para um mapa que será salvo no banco
   Map<String, dynamic> toProfileMap() {
     return {
       'id': id,
@@ -38,9 +37,7 @@ class ExtendedUser {
     };
   }
 
-  /// Cria um ExtendedUser a partir de um mapa do banco
   factory ExtendedUser.fromMap(Map<String, dynamic> data) {
-    // Dados básicos de auth.users
     final String id = data['id'];
     final String email = data['email'];
 
@@ -55,7 +52,7 @@ class ExtendedUser {
         locality: null,
         postalCode: null,
         country: null,
-        status: Status.active, // Valor padrão
+        status: Status.active, 
       );
     }
 
@@ -70,12 +67,11 @@ class ExtendedUser {
       country: data['country'],
       status: Status.values.firstWhere(
         (e) => e.name == data['status'],
-        orElse: () => Status.inactive, // Valor padrão
+        orElse: () => Status.active, 
       ),
     );
   }
 
-  /// Retorna uma cópia do objeto com valores modificados
   ExtendedUser copyWith({
     String? email,
     String? name,
@@ -87,7 +83,7 @@ class ExtendedUser {
     Status? status,
   }) {
     return ExtendedUser(
-      id: id, // ID não pode mudar
+      id: id, 
       email: email ?? this.email,
       name: name ?? this.name,
       phone: phone ?? this.phone,

@@ -5,12 +5,11 @@ import 'package:clients_manager/src/features/weather/ui/widgets/weather_card_wid
 import 'package:clients_manager/src/features/weather/data/repositories/weather_repository.dart';
 import 'package:clients_manager/src/features/user/ui/pages/clients_home_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:provider/provider.dart';  // Adicionando o Provider aqui
+import 'package:provider/provider.dart';  
 import 'package:clients_manager/src/features/user/ui/controllers/user_controller.dart';
 import 'package:clients_manager/src/features/user/data/services/user_service.dart'; 
 import 'package:clients_manager/src/features/user/data/repositories/user_repository.dart';  
 
-// Sua chave e URL do Supabase
 Future<void> main() async {
   await Supabase.initialize(
     url: 'https://ttxorfpxadojffxpgbub.supabase.co',
@@ -27,10 +26,9 @@ Future<void> main() async {
   } catch (e) {
     print('Erro ao autenticar usuário de serviço: $e');
   }
-  // Envolvendo o MaterialApp com o ChangeNotifierProvider para o UserController
   runApp(
     ChangeNotifierProvider(
-      create: (context) => UserController(UserService(UserRepository())), // Assumindo que você tenha o UserController pronto
+      create: (context) => UserController(UserService(UserRepository())), 
       child: MyApp(),
     ),
   );

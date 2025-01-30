@@ -22,7 +22,7 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
   late TextEditingController _postalCodeController;
   late TextEditingController _countryController;
   late TextEditingController _emailController;
-  late TextEditingController _passwordController; // Para senha
+  late TextEditingController _passwordController; 
   late Status _selectedStatus;
 
   @override
@@ -35,9 +35,9 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
     _countryController = TextEditingController();
     _emailController = TextEditingController();
     _passwordController =
-        TextEditingController(); // Adicionando o controlador de senha
+        TextEditingController(); 
     _selectedStatus =
-        Status.active; // Define a status default, pode ser ajustado
+        Status.active; 
   }
 
   @override
@@ -48,7 +48,7 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
     _postalCodeController.dispose();
     _countryController.dispose();
     _emailController.dispose();
-    _passwordController.dispose(); // Descartando o controlador de senha
+    _passwordController.dispose(); 
     super.dispose();
   }
 
@@ -115,7 +115,6 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
         TextButton(
           onPressed: () async {
             try {
-              // Criar o usuário no Supabase com email e senha
               final response = await Supabase.instance.client.auth.signUp(
                 email: _emailController.text,
                 password: _passwordController.text,

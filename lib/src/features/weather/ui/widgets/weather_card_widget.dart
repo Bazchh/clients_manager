@@ -40,7 +40,7 @@ class WeatherCard extends StatelessWidget {
                   );
                 }
 
-                final weather = weatherList.first; // Pega o primeiro dia disponível
+                final weather = weatherList.first; 
 
                 return Card(
                   margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),

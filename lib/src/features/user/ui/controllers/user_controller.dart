@@ -68,7 +68,7 @@ class UserController extends ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      print('Error updating user: $e'); // Log detalhado do erro
+      print('Error updating user: $e'); 
       _errorMessage = 'Failed to edit user: $e';
       notifyListeners();
     }

@@ -93,13 +93,11 @@ class UserRepository {
 
   Future<void> deleteUser(String id) async {
     try {
-      // Exclui o perfil do usuário na tabela user_profiles
       await _client
           .from('user_profiles')
           .delete()
-          .eq('id', id); // Certifique-se de usar 'user_id', não 'id'
+          .eq('id', id); 
 
-      // Exclui o usuário usando a API de autenticação
       await _client.auth.admin.deleteUser(id);
 
       print('User and profile deleted successfully for user_id: $id');
