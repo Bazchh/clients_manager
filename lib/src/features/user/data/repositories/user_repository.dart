@@ -9,41 +9,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class UserRepository {
   final SupabaseClient _client = Supabase.instance.client;
 
-  Future<ExtenderUser> createUser(String email, String password) async {
+  Future<void> createUser(ExtendedUser user, String password) async {
     try {
-      
-      // Inserir perfil na tabela user_profiles
-      final response = await Supabase.instance.client.auth.signUp(
-              email: email,
-              password: password,
-            );
-
-            if (response.session == null) {
-              String errorMessage = 'Unknown error';
-              if (response.session != 200) {
-                errorMessage =
-                    'Failed to create user. Status: ${response.session}';
-              }
-
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(errorMessage)),
-              );
-              return;
-            }
-
-      final user = ExtendedUser(
-              id: response.user!.id, // Agora passamos apenas o ID
-              email: response.user!.email ?? '', // Garantindo que não seja nulo
-              name: _nameController.text,
-              phone: _phoneController.text,
-              street: _streetController.text,
-              postalCode: _postalCodeController.text,
-              country: _countryController.text,
-              status: _selectedStatus,
-            );
-      
       await _client.from('user_profiles').insert({
-        'id': user.id, // ID do usuário criado no auth
+        'id': user.id,
         'name': user.name,
         'phone': user.phone,
         'street': user.street,
@@ -51,31 +20,30 @@ class UserRepository {
         'postal_code': user.postalCode,
         'country': user.country,
         'status': user.status.toString(),
-        'created_at': DateTime.now().toIso8601String(),
       });
-      return user;
-      print("sucess on creating user!");
+
+      print("Usuário e perfil criados com sucesso!");
     } catch (error) {
       print("Erro ao criar usuário: $error");
     }
   }
 
   Future<List<ExtendedUser>> getAllUsers() async {
-    final List<dynamic> response =
-        await _client.from('auth.users').select('*, user_profiles(*)');
+    try {
+      final List<dynamic> response =
+          await _client.from('auth.users').select('*, user_profiles(*)');
 
-    if (response.isEmpty) {
-      throw Exception('Error fetching users: No data returned');
-    }
-
-    return response.map((data) {
-      final profileData = data['user_profiles'] ?? {};
-      final user = User.fromJson(data);
-      if (user == null) {
-        throw Exception('Error parsing user data');
+      if (response.isEmpty) {
+        throw Exception('Error fetching users: No data returned');
       }
-      return ExtendedUser.fromMap(profileData, user);
-    }).toList();
+
+      return response.map((data) {
+        return ExtendedUser.fromMap(data);
+      }).toList();
+    } catch (e) {
+      print('Error in getAllUsers: $e');
+      throw Exception('Failed to fetch users: $e');
+    }
   }
 
   Future<ExtendedUser?> getUserById(String id) async {
@@ -92,7 +60,7 @@ class UserRepository {
     if (user == null) {
       throw Exception('Error parsing user data');
     }
-    return ExtendedUser.fromMap(profileData, user);
+    return ExtendedUser.fromMap(profileData);
   }
 
   Future<void> updateUser(ExtendedUser updatedUser) async {
