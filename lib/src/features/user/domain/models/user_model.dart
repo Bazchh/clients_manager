@@ -44,23 +44,32 @@ class ExtendedUser {
     final String id = data['id'];
     final String email = data['email'];
 
-    // Dados adicionais de user_profiles
-    final Map<String, dynamic>? profileData = data['user_profiles'];
-    if (profileData == null || profileData.isEmpty) {
-      throw Exception('Missing user profile data');
+    if (data.isEmpty) {
+      print('Missing user profile data for user: $id');
+      return ExtendedUser(
+        id: id,
+        email: email,
+        name: null,
+        phone: null,
+        street: null,
+        locality: null,
+        postalCode: null,
+        country: null,
+        status: Status.active, // Valor padrão
+      );
     }
 
     return ExtendedUser(
       id: id,
       email: email,
-      name: profileData['name'],
-      phone: profileData['phone'],
-      street: profileData['street'],
-      locality: profileData['locality'],
-      postalCode: profileData['postal_code'],
-      country: profileData['country'],
+      name: data['name'],
+      phone: data['phone'],
+      street: data['street'],
+      locality: data['locality'],
+      postalCode: data['postal_code'],
+      country: data['country'],
       status: Status.values.firstWhere(
-        (e) => e.name == profileData['status'],
+        (e) => e.name == data['status'],
         orElse: () => Status.inactive, // Valor padrão
       ),
     );
