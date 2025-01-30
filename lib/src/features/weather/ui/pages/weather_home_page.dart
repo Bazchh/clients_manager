@@ -1,34 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:clients_manager/src/features/weather/ui/controllers/weather_controller.dart';
 import 'package:clients_manager/src/features/weather/data/services/weather_service.dart';
-import 'package:clients_manager/src/features/weather/ui/widgets/weather_card_widget.dart';
 import 'package:clients_manager/src/features/weather/data/repositories/weather_repository.dart';
-class WeatherHomePage extends StatefulWidget {
-  const WeatherHomePage({Key? key}) : super(key: key);
+import 'package:clients_manager/src/features/weather/ui/widgets/weather_card_widget.dart';
 
+class WeatherHomePage extends StatefulWidget {
   @override
-  State<WeatherHomePage> createState() => _WeatherHomePageState();
+  _WeatherHomePageState createState() => _WeatherHomePageState();
 }
 
-class _WeatherHomePageState extends State<WeatherHomePage> {
+class _WeatherHomePageState extends State<WeatherHomePage>
+    with AutomaticKeepAliveClientMixin {
   late final WeatherController _weatherController;
+
+  @override
+  bool get wantKeepAlive => true; // Preserva o estado da página
 
   @override
   void initState() {
     super.initState();
+
+    // Inicializa o controlador e busca os dados do clima
     _weatherController = WeatherController(
-      weatherService: WeatherService(repository: WeatherRepository(apiKey: '67241a63d0acb68d90993bd49c549327')),
+      service: WeatherService(
+        repository: WeatherRepository(apiKey: '67241a63d0acb68d90993bd49c549327'),
+      ),
     );
-    
-    _weatherController.fetchDailyWeather(
-      latitude: 37.0154,
-      longitude: -7.9352,
-      lang: 'en', 
+
+    // Busca os dados do clima para Faro
+    _weatherController.fetchWeather(
+      37.0154,
+       -7.9352,
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // Importante quando usando AutomaticKeepAliveClientMixin
     return Scaffold(
       appBar: AppBar(
         title: const Text("Weather"),
