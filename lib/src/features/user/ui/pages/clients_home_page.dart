@@ -21,7 +21,6 @@ class ClientsHomePage extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.add),
               onPressed: () {
-                // Agora podemos acessar o UserController porque está no escopo do Provider
                 showDialog(
                   context: context,
                   builder: (context) {
@@ -32,13 +31,20 @@ class ClientsHomePage extends StatelessWidget {
                 );
               },
             ),
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: () {
+                Provider.of<UserController>(context, listen: false).loadUsers();
+              },
+            ),
           ],
         ),
         body: Consumer<UserController>(
           builder: (context, controller, child) {
-            // Se a lista de usuários estiver vazia, mostra nada
             if (controller.users.isEmpty) {
-              return SizedBox.shrink(); // Não exibe nada
+              return const Center(
+                child: Text("No clients found. Pull to refresh or add a new client."),
+              );
             }
             return const ClientListWidget();
           },
@@ -47,4 +53,3 @@ class ClientsHomePage extends StatelessWidget {
     );
   }
 }
-
