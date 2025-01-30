@@ -50,7 +50,7 @@ class UserCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4.0),
                   Text(
-                    user.email ?? 'Email not available',
+                    user.email,
                     style: const TextStyle(color: Colors.grey),
                   ),
                   const SizedBox(height: 4.0),
