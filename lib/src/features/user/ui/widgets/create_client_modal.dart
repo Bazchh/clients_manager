@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:clients_manager/src/features/user/domain/models/user_model.dart';
 import 'package:clients_manager/src/features/user/ui/controllers/user_controller.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:clients_manager/src/features/user/data/validators/user_validators.dart'; // Importe os validadores
+import 'package:clients_manager/src/features/user/data/validators/user_validators.dart';
+import 'package:another_flushbar/flushbar.dart';
 
 class CreateUserDialog extends StatefulWidget {
   final UserController userController;
-
+  final BuildContext parentContext;
   const CreateUserDialog({
     Key? key,
     required this.userController,
+    required this.parentContext,
   }) : super(key: key);
 
   @override
@@ -25,6 +27,15 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
   late TextEditingController _emailController;
   late TextEditingController _passwordController;
   late Status _selectedStatus;
+
+  String? _nameError;
+  String? _phoneError;
+  String? _streetError;
+  String? _postalCodeError;
+  String? _countryError;
+  String? _emailError;
+  String? _passwordError;
+  String? _statusError;
 
   @override
   void initState() {
@@ -51,28 +62,27 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
     super.dispose();
   }
 
-  // Função para validar o formulário
   bool _validateForm() {
-    final nameError = Validators.validateName(_nameController.text);
-    final phoneError = Validators.validatePhone(_phoneController.text);
-    final streetError = Validators.validateStreet(_streetController.text);
-    final postalCodeError = Validators.validatePostalCode(_postalCodeController.text);
-    final countryError = Validators.validateCountry(_countryController.text);
-    final emailError = Validators.validateEmail(_emailController.text);
-    final passwordError = Validators.validatePassword(_passwordController.text);
-    final statusError = Validators.validateStatus(_selectedStatus);
+    setState(() {
+      _nameError = Validators.validateName(_nameController.text);
+      _phoneError = Validators.validatePhone(_phoneController.text);
+      _streetError = Validators.validateStreet(_streetController.text);
+      _postalCodeError =
+          Validators.validatePostalCode(_postalCodeController.text);
+      _countryError = Validators.validateCountry(_countryController.text);
+      _emailError = Validators.validateEmail(_emailController.text);
+      _passwordError = Validators.validatePassword(_passwordController.text);
+      _statusError = Validators.validateStatus(_selectedStatus);
+    });
 
-    if (nameError != null ||
-        phoneError != null ||
-        streetError != null ||
-        postalCodeError != null ||
-        countryError != null ||
-        emailError != null ||
-        passwordError != null ||
-        statusError != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(nameError ?? phoneError ?? streetError ?? postalCodeError ?? countryError ?? emailError ?? passwordError ?? statusError!)),
-      );
+    if (_nameError != null ||
+        _phoneError != null ||
+        _streetError != null ||
+        _postalCodeError != null ||
+        _countryError != null ||
+        _emailError != null ||
+        _passwordError != null ||
+        _statusError != null) {
       return false;
     }
     return true;
@@ -90,42 +100,42 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
               controller: _nameController,
               decoration: InputDecoration(
                 labelText: 'Name',
-                errorText: Validators.validateName(_nameController.text),
+                errorText: _nameError,
               ),
             ),
             TextField(
               controller: _phoneController,
               decoration: InputDecoration(
                 labelText: 'Phone',
-                errorText: Validators.validatePhone(_phoneController.text),
+                errorText: _phoneError,
               ),
             ),
             TextField(
               controller: _streetController,
               decoration: InputDecoration(
                 labelText: 'Street',
-                errorText: Validators.validateStreet(_streetController.text),
+                errorText: _streetError,
               ),
             ),
             TextField(
               controller: _postalCodeController,
               decoration: InputDecoration(
                 labelText: 'Postal Code',
-                errorText: Validators.validatePostalCode(_postalCodeController.text),
+                errorText: _postalCodeError,
               ),
             ),
             TextField(
               controller: _countryController,
               decoration: InputDecoration(
                 labelText: 'Country',
-                errorText: Validators.validateCountry(_countryController.text),
+                errorText: _countryError,
               ),
             ),
             TextField(
               controller: _emailController,
               decoration: InputDecoration(
                 labelText: 'Email',
-                errorText: Validators.validateEmail(_emailController.text),
+                errorText: _emailError,
               ),
             ),
             TextField(
@@ -133,7 +143,7 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
               obscureText: true,
               decoration: InputDecoration(
                 labelText: 'Password',
-                errorText: Validators.validatePassword(_passwordController.text),
+                errorText: _passwordError,
               ),
             ),
             DropdownButton<Status>(
@@ -151,6 +161,11 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
               }).toList(),
               hint: const Text('Select Status'),
             ),
+            if (_statusError != null)
+              Text(
+                _statusError!,
+                style: TextStyle(color: Colors.red),
+              ),
           ],
         ),
       ),
@@ -162,16 +177,13 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
         TextButton(
           onPressed: () async {
             if (!_validateForm()) return;
-
             try {
               final response = await Supabase.instance.client.auth.signUp(
                 email: _emailController.text,
                 password: _passwordController.text,
               );
               if (response.user == null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Failed to create user: Unknown error')),
-                );
+                _showFlushbar('Failed to create user: Unknown error');
                 return;
               }
               final newUser = ExtendedUser(
@@ -184,27 +196,36 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
                 country: _countryController.text,
                 status: _selectedStatus,
               );
-              final success = await widget.userController.createUser(newUser, _passwordController.text);
+              final success = await widget.userController.createUser(
+                newUser,
+                _passwordController.text,
+              );
               if (success) {
-                Navigator.pop(context);
-                widget.userController.loadUsers();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('User created successfully')),
-                );
+                Navigator.pop(context); // Fecha o diálogo
+                await widget.userController.loadUsers();
+                _showFlushbar('User created successfully');
               } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Failed to save user data')),
-                );
+                _showFlushbar('Failed to save user data');
               }
             } catch (e) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error creating user: $e')),
-              );
+              _showFlushbar('Error creating user: $e');
             }
           },
           child: const Text('Save', style: TextStyle(color: Colors.green)),
         ),
       ],
     );
+  }
+
+  void _showFlushbar(String message) {
+    Flushbar(
+      message: message,
+      duration: const Duration(seconds: 3),
+      flushbarPosition: FlushbarPosition.BOTTOM,
+      backgroundColor: Colors.red,
+      borderRadius: BorderRadius.circular(8),
+      margin: const EdgeInsets.all(8),
+      padding: const EdgeInsets.all(16),
+    ).show(widget.parentContext);
   }
 }
