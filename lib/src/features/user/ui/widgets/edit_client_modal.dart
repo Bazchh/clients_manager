@@ -2,15 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:clients_manager/src/features/user/domain/models/user_model.dart';
 import 'package:clients_manager/src/features/user/ui/controllers/user_controller.dart';
 import 'package:clients_manager/src/features/user/data/validators/user_validators.dart';
+import 'package:another_flushbar/flushbar.dart';
 
 class EditUserDialog extends StatefulWidget {
   final ExtendedUser user;
   final UserController userController;
+  final BuildContext parentContext;
 
   const EditUserDialog({
     Key? key,
     required this.user,
     required this.userController,
+    required this.parentContext,
   }) : super(key: key);
 
   @override
@@ -25,6 +28,14 @@ class _EditUserDialogState extends State<EditUserDialog> {
   late TextEditingController _countryController;
   late TextEditingController _emailController;
   late Status _selectedStatus;
+
+  // Variáveis para armazenar os erros de validação
+  String? _nameError;
+  String? _phoneError;
+  String? _streetError;
+  String? _postalCodeError;
+  String? _countryError;
+  String? _statusError;
 
   @override
   void initState() {
@@ -50,29 +61,34 @@ class _EditUserDialogState extends State<EditUserDialog> {
   }
 
   bool _validateForm() {
-    final nameError = Validators.validateName(_nameController.text);
-    final phoneError = Validators.validatePhone(_phoneController.text);
-    final streetError = Validators.validateStreet(_streetController.text);
-    final postalCodeError =
-        Validators.validatePostalCode(_postalCodeController.text);
-    final countryError = Validators.validateCountry(_countryController.text);
-    final statusError = Validators.validateStatus(_selectedStatus);
+    setState(() {
+      _nameError = Validators.validateName(_nameController.text);
+      _phoneError = Validators.validatePhone(_phoneController.text);
+      _streetError = Validators.validateStreet(_streetController.text);
+      _postalCodeError =
+          Validators.validatePostalCode(_postalCodeController.text);
+      _countryError = Validators.validateCountry(_countryController.text);
+      _statusError = Validators.validateStatus(_selectedStatus);
+    });
 
-    if (nameError != null ||
-        phoneError != null ||
-        streetError != null ||
-        postalCodeError != null ||
-        countryError != null ||
-        statusError != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(nameError ??
-                phoneError ??
-                streetError ??
-                postalCodeError ??
-                countryError ??
-                statusError!)),
-      );
+    if (_nameError != null ||
+        _phoneError != null ||
+        _streetError != null ||
+        _postalCodeError != null ||
+        _countryError != null ||
+        _statusError != null) {
+      // Exibe a mensagem de erro usando Flushbar
+      Flushbar(
+        message: _nameError ??
+            _phoneError ??
+            _streetError ??
+            _postalCodeError ??
+            _countryError ??
+            _statusError!,
+        duration: const Duration(seconds: 3),
+        backgroundColor: Colors.red,
+        flushbarPosition: FlushbarPosition.BOTTOM,
+      ).show(context);
       return false;
     }
     return true;
@@ -90,36 +106,35 @@ class _EditUserDialogState extends State<EditUserDialog> {
               controller: _nameController,
               decoration: InputDecoration(
                 labelText: 'Name',
-                errorText: Validators.validateName(_nameController.text),
+                errorText: _nameError,
               ),
             ),
             TextField(
               controller: _phoneController,
               decoration: InputDecoration(
                 labelText: 'Phone',
-                errorText: Validators.validatePhone(_phoneController.text),
+                errorText: _phoneError,
               ),
             ),
             TextField(
               controller: _streetController,
               decoration: InputDecoration(
                 labelText: 'Street',
-                errorText: Validators.validateStreet(_streetController.text),
+                errorText: _streetError,
               ),
             ),
             TextField(
               controller: _postalCodeController,
               decoration: InputDecoration(
                 labelText: 'Postal Code',
-                errorText:
-                    Validators.validatePostalCode(_postalCodeController.text),
+                errorText: _postalCodeError,
               ),
             ),
             TextField(
               controller: _countryController,
               decoration: InputDecoration(
                 labelText: 'Country',
-                errorText: Validators.validateCountry(_countryController.text),
+                errorText: _countryError,
               ),
             ),
             TextField(
@@ -142,6 +157,11 @@ class _EditUserDialogState extends State<EditUserDialog> {
               }).toList(),
               hint: const Text('Select Status'),
             ),
+            if (_statusError != null)
+              Text(
+                _statusError!,
+                style: const TextStyle(color: Colors.red),
+              ),
           ],
         ),
       ),
@@ -153,7 +173,6 @@ class _EditUserDialogState extends State<EditUserDialog> {
         TextButton(
           onPressed: () async {
             if (!_validateForm()) return;
-
             final updatedUser = widget.user.copyWith(
               name: _nameController.text,
               phone: _phoneController.text,
@@ -162,10 +181,9 @@ class _EditUserDialogState extends State<EditUserDialog> {
               country: _countryController.text,
               status: _selectedStatus,
             );
-
             await widget.userController.editUser(updatedUser);
             Navigator.pop(context);
-            ScaffoldMessenger.of(context).showSnackBar(
+            ScaffoldMessenger.of(widget.parentContext).showSnackBar(
               const SnackBar(content: Text('User updated successfully')),
             );
           },
