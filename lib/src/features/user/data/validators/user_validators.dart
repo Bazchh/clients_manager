@@ -1,7 +1,6 @@
 import 'package:clients_manager/src/features/user/domain/models/user_model.dart';
 
 class Validators {
-  // Validação de nome
   static String? validateName(String? value) {
     if (value == null || value.isEmpty) {
       return 'Name is required';
@@ -9,10 +8,9 @@ class Validators {
     if (value.length < 3) {
       return 'Name must be at least 3 characters long';
     }
-    return null; // Sem erro
+    return null; 
   }
 
-  // Validação de telefone
   static String? validatePhone(String? value) {
     if (value == null || value.isEmpty) {
       return 'Phone is required';
@@ -24,7 +22,6 @@ class Validators {
     return null;
   }
 
-  // Validação de rua
   static String? validateStreet(String? value) {
     if (value == null || value.isEmpty) {
       return 'Street is required';
@@ -32,7 +29,6 @@ class Validators {
     return null;
   }
 
-  // Validação de código postal
   static String? validatePostalCode(String? value) {
     if (value == null || value.isEmpty) {
       return 'Postal Code is required';
@@ -52,7 +48,6 @@ class Validators {
     return null;
   }
 
-  // Validação de email
   static String? validateEmail(String? value) {
     if (value == null || value.isEmpty) {
       return 'Email is required';
@@ -65,7 +60,6 @@ class Validators {
     return null;
   }
 
-  // Validação de senha
   static String? validatePassword(String? value) {
     if (value == null || value.isEmpty) {
       return 'Password is required';
@@ -76,7 +70,6 @@ class Validators {
     return null;
   }
 
-  // Validação de status
   static String? validateStatus(Status? value) {
     if (value == null) {
       return 'Status is required';

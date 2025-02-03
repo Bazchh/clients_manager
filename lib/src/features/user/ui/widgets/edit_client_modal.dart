@@ -29,7 +29,6 @@ class _EditUserDialogState extends State<EditUserDialog> {
   late TextEditingController _emailController;
   late Status _selectedStatus;
 
-  // Variáveis para armazenar os erros de validação
   String? _nameError;
   String? _phoneError;
   String? _streetError;

@@ -201,7 +201,7 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
                 _passwordController.text,
               );
               if (success) {
-                Navigator.pop(context); // Fecha o diálogo
+                Navigator.pop(context); 
                 await widget.userController.loadUsers();
                 _showFlushbar('User created successfully');
               } else {
