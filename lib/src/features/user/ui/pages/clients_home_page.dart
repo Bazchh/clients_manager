@@ -17,28 +17,7 @@ class ClientsHomePage extends StatelessWidget {
             title: const Text("Client Manager"),
             centerTitle: true,
           ),
-          body: userController.isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : userController.errorMessage != null
-                  ? Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(userController.errorMessage!),
-                          const SizedBox(height: 10),
-                          ElevatedButton(
-                            onPressed: () => userController.loadUsers(),
-                            child: const Text('Try again'),
-                          ),
-                        ],
-                      ),
-                    )
-                  : userController.users.isEmpty
-                      ? const Center(
-                          child: Text(
-                              "No clients found. Pull to refresh or add a new client."),
-                        )
-                      : ClientListWidget(),
+          body: ClientListWidget(),
         );
       },
     );

@@ -76,7 +76,6 @@ class _EditUserDialogState extends State<EditUserDialog> {
         _postalCodeError != null ||
         _countryError != null ||
         _statusError != null) {
-      // Exibe a mensagem de erro usando Flushbar
       Flushbar(
         message: _nameError ??
             _phoneError ??

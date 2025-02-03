@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:clients_manager/src/features/weather/ui/pages/weather_home_page.dart';
 import 'package:clients_manager/src/features/user/ui/pages/clients_home_page.dart';
+import 'package:clients_manager/src/features/user/ui/controllers/user_controller.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -11,10 +13,6 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
-  final List<Widget> _pages = [
-    WeatherHomePage(),
-    const ClientsHomePage(),
-  ];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -24,22 +22,33 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _pages[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.cloud),
-            label: "Weather",
+    return Consumer<UserController>(
+      builder: (context, userController, child) {
+        print('MainScreen rebuilt with users count: ${userController.users.length}');
+        return Scaffold(
+          body: IndexedStack(
+            index: _selectedIndex,
+            children: [
+              WeatherHomePage(),
+              ClientsHomePage(),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.people),
-            label: "Clients",
+          bottomNavigationBar: BottomNavigationBar(
+            currentIndex: _selectedIndex,
+            onTap: _onItemTapped,
+            items: [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.cloud),
+                label: "Weather",
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.people),
+                label: "Clients",
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

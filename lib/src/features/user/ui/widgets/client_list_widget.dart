@@ -11,12 +11,13 @@ class ClientListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-   final userController = Provider.of<UserController>(context);
-  print('Rebuilding ClientListWidget with users count: ${userController.users.length}');
+    final userController = Provider.of<UserController>(context);
+    print(
+        'Rebuilding ClientListWidget with users count: ${userController.users.length}');
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Client List'),
+        title: const Text('Client List', style: TextStyle(fontSize: 18)),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
