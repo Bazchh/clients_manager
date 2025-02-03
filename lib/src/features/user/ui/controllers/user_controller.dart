@@ -31,13 +31,19 @@ class UserController extends ChangeNotifier {
 
   Future<bool> createUser(ExtendedUser newUser, String password) async {
     try {
+      // Salva o usuário no banco de dados
       await userService.createUser(newUser, password);
+
+      // Adiciona o novo usuário à lista interna
       _users.add(newUser);
+
+      // Notifica os widgets dependentes
       notifyListeners();
+      print('State updated: Users count = ${_users.length}');
       return true;
     } catch (e) {
       _errorMessage = 'Failed to create user: $e';
-      notifyListeners();
+      notifyListeners(); // Notifica os widgets sobre o erro
       return false;
     }
   }
