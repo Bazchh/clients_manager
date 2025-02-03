@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:clients_manager/src/features/user/domain/models/user_model.dart';
 import 'package:clients_manager/src/features/user/data/services/user_service.dart';
+import 'dart:io';
 
 class UserController extends ChangeNotifier {
   final UserService userService;
-
   UserController(this.userService);
 
   List<ExtendedUser> _users = [];
@@ -19,7 +19,6 @@ class UserController extends ChangeNotifier {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
-
     try {
       _users = await userService.getAllUsers();
     } catch (e) {
@@ -61,16 +60,23 @@ class UserController extends ChangeNotifier {
       print('Attempting to update user: ${updatedUser.id}');
       await userService.updateUser(updatedUser);
       print('User updated successfully: ${updatedUser.id}');
-
       final index = _users.indexWhere((user) => user.id == updatedUser.id);
       if (index != -1) {
         _users[index] = updatedUser;
         notifyListeners();
       }
     } catch (e) {
-      print('Error updating user: $e'); 
+      print('Error updating user: $e');
       _errorMessage = 'Failed to edit user: $e';
       notifyListeners();
+    }
+  }
+
+  Future<File> generateUserPdf(ExtendedUser user) async {
+    try {
+      return await userService.generateUserPdf(user);
+    } catch (e) {
+      throw Exception('Error generating PDF: $e');
     }
   }
 }
