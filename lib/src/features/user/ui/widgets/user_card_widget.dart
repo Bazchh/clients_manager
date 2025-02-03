@@ -62,7 +62,6 @@ class UserCard extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 16.0),
-            // Status
             Icon(
               user.status == Status.active ? Icons.check_circle : Icons.cancel,
               color: user.status == Status.active ? Colors.green : Colors.red,
@@ -72,6 +71,7 @@ class UserCard extends StatelessWidget {
               onEdit: onEdit,
               onDelete: onDelete,
               userName: user.name ?? 'User',
+              user: user,  
             ),
           ],
         ),
