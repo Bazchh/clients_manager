@@ -11,7 +11,6 @@ class ClientListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userController = Provider.of<UserController>(context);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Client List'),
@@ -22,8 +21,7 @@ class ClientListWidget extends StatelessWidget {
               await userController.loadUsers();
               if (userController.errorMessage == null) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text('Clients refreshed successfully!')),
+                  const SnackBar(content: Text('Clients refreshed successfully!')),
                 );
               }
             },
@@ -35,8 +33,7 @@ class ClientListWidget extends StatelessWidget {
                 context: context,
                 builder: (context) {
                   return CreateUserDialog(
-                    userController:
-                        Provider.of<UserController>(context, listen: false),
+                    userController: Provider.of<UserController>(context, listen: false),
                   );
                 },
               );
@@ -55,7 +52,7 @@ class ClientListWidget extends StatelessWidget {
                       const SizedBox(height: 10),
                       ElevatedButton(
                         onPressed: () => userController.loadUsers(),
-                        child: const Text('Tentar novamente'),
+                        child: const Text('Try again'),
                       ),
                     ],
                   ),
@@ -77,8 +74,7 @@ class ClientListWidget extends StatelessWidget {
                             ),
                           ),
                           onDelete: () async {
-                            bool success =
-                                await userController.deleteUser(user.id);
+                            bool success = await userController.deleteUser(user.id);
                             if (success) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
@@ -90,7 +86,7 @@ class ClientListWidget extends StatelessWidget {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text('Failed to delete user.'),
-                                  duration: Duration(seconds: 2),
+                                  duration: const Duration(seconds: 2),
                                 ),
                               );
                             }
