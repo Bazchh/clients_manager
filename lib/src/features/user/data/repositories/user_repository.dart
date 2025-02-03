@@ -1,13 +1,27 @@
 import 'dart:io';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:path_provider/path_provider.dart';
 import 'package:location/location.dart';
 import 'package:clients_manager/src/features/user/domain/models/user_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class UserRepository {
   final SupabaseClient _client = Supabase.instance.client;
+
+  Future<File> generateUniqueFileName(
+      Directory downloadsDir, String baseName, String extension) async {
+    int counter = 1;
+    String fileName = '$baseName$extension';
+    File file = File('${downloadsDir.path}/$fileName');
+
+    while (file.existsSync()) {
+      fileName = '$baseName ($counter)$extension';
+      file = File('${downloadsDir.path}/$fileName');
+      counter++;
+    }
+
+    return file;
+  }
 
   Future<void> createUser(ExtendedUser user, String password) async {
     try {
@@ -93,10 +107,7 @@ class UserRepository {
 
   Future<void> deleteUser(String id) async {
     try {
-      await _client
-          .from('user_profiles')
-          .delete()
-          .eq('id', id); 
+      await _client.from('user_profiles').delete().eq('id', id);
 
       await _client.auth.admin.deleteUser(id);
 
@@ -116,7 +127,6 @@ class UserRepository {
 
   Future<File> generateUserPdf(ExtendedUser user) async {
     final pdf = pw.Document();
-
     final location = Location();
     LocationData locationData;
 
@@ -125,7 +135,7 @@ class UserRepository {
       if (!serviceEnabled) {
         serviceEnabled = await location.requestService();
         if (!serviceEnabled) {
-          throw Exception('Serviço de localização desabilitado.');
+          throw Exception('Location service disabled.');
         }
       }
 
@@ -133,45 +143,71 @@ class UserRepository {
       if (permissionGranted == PermissionStatus.denied) {
         permissionGranted = await location.requestPermission();
         if (permissionGranted != PermissionStatus.granted) {
-          throw Exception('Permissão de localização negada.');
+          throw Exception('Location permission denied.');
         }
       }
 
       locationData = await location.getLocation();
     } catch (e) {
-      throw Exception('Erro ao obter localização: $e');
+      throw Exception('$e');
     }
 
     pdf.addPage(
       pw.Page(
-        build: (context) => pw.Column(
-          crossAxisAlignment: pw.CrossAxisAlignment.start,
-          children: [
-            pw.Text('Informações do Usuário',
-                style:
-                    pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
-            pw.SizedBox(height: 20),
-            pw.Text('ID: ${user.id}'),
-            pw.Text('Email: ${user.email}'),
-            pw.Text('Telefone: ${user.phone ?? "N/A"}'),
-            pw.Text(
-                'Endereço: ${user.street ?? "N/A"}, ${user.locality ?? "N/A"}, ${user.country ?? "N/A"}'),
-            pw.Text('CEP: ${user.postalCode ?? "N/A"}'),
-            pw.Text('Status: ${user.status.name}'),
-            pw.Spacer(),
-            pw.Text(
-              'Gerado em: ${DateTime.now()} | Coordenadas: ${locationData.latitude}, ${locationData.longitude}',
-              style: pw.TextStyle(fontSize: 10, color: PdfColors.grey),
-            ),
-          ],
-        ),
+        build: (context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Expanded(
+                child: pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    pw.Text(
+                      'Client Profile',
+                      style: pw.TextStyle(
+                          fontSize: 24, fontWeight: pw.FontWeight.bold),
+                    ),
+                    pw.SizedBox(height: 20),
+                    pw.Text('Email: ${user.email}'),
+                    pw.Text('Phone: ${user.phone ?? "N/A"}'),
+                    pw.Text(
+                      'Address: ${user.street ?? "N/A"}, ${user.locality ?? "N/A"}, ${user.country ?? "N/A"}',
+                    ),
+                    pw.Text('Postal Code: ${user.postalCode ?? "N/A"}'),
+                    pw.Text('Status: ${user.status.name}'),
+                  ],
+                ),
+              ),
+              pw.Divider(),
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                children: [
+                  pw.Text(
+                    'Generated at: ${DateTime.now()}',
+                    style: pw.TextStyle(fontSize: 10, color: PdfColors.grey),
+                  ),
+                  pw.Text(
+                    'Coordinates: ${locationData.latitude}, ${locationData.longitude}',
+                    style: pw.TextStyle(fontSize: 10, color: PdfColors.grey),
+                  ),
+                ],
+              ),
+            ],
+          );
+        },
       ),
     );
 
-    final output = await getTemporaryDirectory();
-    final file = File('${output.path}/user_${user.id}.pdf');
-    await file.writeAsBytes(await pdf.save());
+    final downloadsDir = Directory('/storage/emulated/0/Download');
+    if (!downloadsDir.existsSync()) {
+      downloadsDir.createSync(recursive: true);
+    }
 
+    final baseName = user.name ?? 'user_${user.id}';
+    final extension = '.pdf';
+    final file =
+        await generateUniqueFileName(downloadsDir, baseName, extension);
+    await file.writeAsBytes(await pdf.save());
     return file;
   }
 }
