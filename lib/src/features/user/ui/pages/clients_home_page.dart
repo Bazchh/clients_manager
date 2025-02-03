@@ -1,35 +1,46 @@
-import 'package:clients_manager/src/features/user/data/repositories/user_repository.dart';
-import 'package:clients_manager/src/features/user/data/services/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:clients_manager/src/features/user/ui/widgets/client_list_widget.dart';
 import 'package:clients_manager/src/features/user/ui/controllers/user_controller.dart';
-
 
 class ClientsHomePage extends StatelessWidget {
   const ClientsHomePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => UserController(UserService(UserRepository()))..loadUsers(),
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text("Client Manager"),
-          centerTitle: true,
-          
-        ),
-        body: Consumer<UserController>(
-          builder: (context, controller, child) {
-            if (controller.users.isEmpty) {
-              return const Center(
-                child: Text("No clients found. Pull to refresh or add a new client."),
-              );
-            }
-            return const ClientListWidget();
-          },
-        ),
-      ),
+    return Consumer<UserController>(
+      builder: (context, userController, child) {
+        print(
+            'ClientsHomePage rebuilt with users count: ${userController.users.length}');
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text("Client Manager"),
+            centerTitle: true,
+          ),
+          body: userController.isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : userController.errorMessage != null
+                  ? Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(userController.errorMessage!),
+                          const SizedBox(height: 10),
+                          ElevatedButton(
+                            onPressed: () => userController.loadUsers(),
+                            child: const Text('Try again'),
+                          ),
+                        ],
+                      ),
+                    )
+                  : userController.users.isEmpty
+                      ? const Center(
+                          child: Text(
+                              "No clients found. Pull to refresh or add a new client."),
+                        )
+                      : ClientListWidget(),
+        );
+      },
     );
   }
 }
